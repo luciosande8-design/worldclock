@@ -6,7 +6,14 @@
 <meta name="description" content="WorldClock.live — Exact time worldwide. Time zones, stopwatch, countdown, calendar.">
 <meta property="og:title" content="WorldClock.live">
 <meta property="og:description" content="Real-time world clock. 120+ cities, 80+ countries, 38 time zones.">
-<title>WorldClock.live</title>
+<title>WorldClock.live — Hora Exata no Mundo</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0a0f'/%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%2300e5a0' stroke-width='1.5'/%3E%3Cline x1='16' y1='16' x2='23' y2='8' stroke='%2300e5a0' stroke-width='1.5' stroke-linecap='round'/%3E%3Cline x1='16' y1='16' x2='11' y2='22' stroke='%2300b8d4' stroke-width='1.2' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='2' fill='%2300e5a0'/%3E%3Cline x1='16' y1='5' x2='16' y2='8' stroke='%2300e5a0' stroke-width='1.5' stroke-linecap='round'/%3E%3Cline x1='27' y1='16' x2='24' y2='16' stroke='%2300e5a0' stroke-width='1.5' stroke-linecap='round'/%3E%3Cline x1='16' y1='27' x2='16' y2='24' stroke='%2300e5a0' stroke-width='1.5' stroke-linecap='round'/%3E%3Cline x1='5' y1='16' x2='8' y2='16' stroke='%2300e5a0' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00e5a0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WorldClock">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
 <!-- Google AdSense -->
@@ -33,8 +40,12 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 .ad-footer-inner .ad-size{font-family:'Space Mono',monospace;font-size:13px;color:var(--accent);font-weight:700}
 .ad-footer-inner .ad-info{font-size:11px;color:var(--muted)}
 nav{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--border);background:var(--surface);flex-wrap:wrap;gap:8px}
-.logo{font-family:'Space Mono',monospace;font-size:18px;color:var(--accent);letter-spacing:-1px}
-.logo span{color:var(--text)}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;cursor:pointer}
+.logo-svg{flex-shrink:0}
+.logo-text{display:flex;flex-direction:column;line-height:1.1}
+.logo-text .t1{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:var(--accent);letter-spacing:-0.5px}
+.logo-text .t2{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:var(--text);letter-spacing:-0.5px}
+.logo-text .t3{font-family:'Sora',sans-serif;font-size:10px;color:var(--accent2);letter-spacing:1px}
 .nav-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .nav-tabs{display:flex;gap:4px;flex-wrap:wrap}
 .tab{padding:7px 16px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-family:'Sora',sans-serif;font-size:13px;cursor:pointer;transition:all .2s}
@@ -108,7 +119,25 @@ footer a{color:var(--accent2);text-decoration:none}
 </div>
 
 <nav>
-  <div class="logo">World<span>Clock</span>.live</div>
+  <div class="logo">
+    <svg class="logo-svg" width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="44" height="44" rx="10" fill="#0a0a0f" stroke="#00e5a0" stroke-width="1"/>
+      <circle cx="22" cy="22" r="14" stroke="#00e5a0" stroke-width="1.5"/>
+      <circle cx="22" cy="22" r="10" stroke="#00b8d4" stroke-width="0.6" stroke-dasharray="2.5,2"/>
+      <line x1="22" y1="22" x2="30" y2="12" stroke="#00e5a0" stroke-width="2" stroke-linecap="round"/>
+      <line x1="22" y1="22" x2="16" y2="30" stroke="#00b8d4" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="22" cy="22" r="2.5" fill="#00e5a0"/>
+      <line x1="22" y1="8" x2="22" y2="11" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="36" y1="22" x2="33" y2="22" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="22" y1="36" x2="22" y2="33" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="8" y1="22" x2="11" y2="22" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <div class="logo-text">
+      <span class="t1">World</span>
+      <span class="t2">Clock</span>
+      <span class="t3">.live</span>
+    </div>
+  </div>
   <div class="nav-tabs">
     <button class="tab active" onclick="showPage('home',this)" data-i18n="nav_clock">Hora</button>
     <button class="tab" onclick="showPage('zones',this)" data-i18n="nav_zones">Fusos</button>
@@ -135,6 +164,21 @@ footer a{color:var(--accent2);text-decoration:none}
 
 <div class="stats-bar" id="stats-bar">
   <span id="stats-text">120 cities · 80+ countries · 38 time zones · Live</span>
+</div>
+
+<!-- BANNER DE INSTALAÇÃO PWA -->
+<div id="install-banner" style="display:none;align-items:center;justify-content:space-between;padding:10px 24px;background:linear-gradient(90deg,#0f2a20,#0a1a2a);border-bottom:1px solid #00e5a0;flex-wrap:wrap;gap:8px">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:20px">📲</span>
+    <div>
+      <div style="font-size:13px;font-weight:600;color:#00e5a0">Instalar WorldClock como App</div>
+      <div style="font-size:11px;color:#8888aa">Acesso rápido no ecrã inicial, funciona offline</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button id="install-btn" onclick="if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null;document.getElementById('install-banner').style.display='none';});}" style="background:#00e5a0;color:#000;border:none;border-radius:8px;padding:8px 16px;font-family:Sora,sans-serif;font-size:13px;font-weight:600;cursor:pointer">⬇ Instalar</button>
+    <button onclick="document.getElementById('install-banner').style.display='none'" style="background:transparent;color:#8888aa;border:1px solid #2a2a3a;border-radius:8px;padding:8px 12px;font-family:Sora,sans-serif;font-size:12px;cursor:pointer">✕</button>
+  </div>
 </div>
 
 <!-- PAGE: HOME -->
@@ -869,6 +913,20 @@ function toggleTheme(){
   updateMainClock();
   updateAllCities();
 })();
+
+// ─── PWA SERVICE WORKER ──────────────────────────────────────────────────────
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/worldclock/sw.js').catch(()=>{});
+  });
+}
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const banner = document.getElementById('install-banner');
+  if(banner) banner.style.display = 'flex';
+});
 </script>
 </body>
 </html>
