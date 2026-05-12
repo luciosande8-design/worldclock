@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html lang="pt">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,8 @@
 <title>WorldClock.live</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<!-- Google AdSense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4661901289799501" crossorigin="anonymous"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#0a0a0f;--surface:#13131a;--surface2:#1c1c28;--accent:#00e5a0;--accent2:#00b8d4;--text:#f0f0f8;--muted:#8888aa;--border:#2a2a3a;--radius:12px;}
@@ -92,7 +95,6 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--muted);border-t
 footer a{color:var(--accent2);text-decoration:none}
 @media(max-width:700px){.layout{grid-template-columns:1fr}.world-grid{grid-template-columns:repeat(2,1fr)}.big-time{font-size:44px}}
 </style>
-</head><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4661901289799501" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -176,9 +178,21 @@ footer a{color:var(--accent2);text-decoration:none}
         <input type="number" id="cd-s" value="0" min="0" max="59">
       </div>
       <div class="chrono-display" id="cd-display" style="color:var(--accent2)">00:05:00</div>
+      <div style="margin:10px 0 6px;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">🔔 Tom do Alarme</div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:12px">
+        <select id="alarm-tone" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px;color:var(--text);font-family:Sora,sans-serif;font-size:12px">
+          <option value="digital">⏰ Digital — Clássico despertador</option>
+          <option value="gentle">🌅 Suave — Acordar gentil</option>
+          <option value="urgent">🚨 Urgente — Alerta forte</option>
+          <option value="bell">🔔 Sino — Tom de sino</option>
+          <option value="beep">📟 Beep — Tom simples</option>
+        </select>
+        <button class="btn" onclick="previewTone()" style="font-size:11px;padding:8px 10px">▶ Testar</button>
+      </div>
       <div class="chrono-btns">
         <button class="btn primary" id="cd-btn" onclick="cdToggle()">▶</button>
         <button class="btn danger" onclick="cdReset()" data-i18n="reset">✕ Reset</button>
+        <button class="btn" id="stop-alarm-btn" onclick="stopAlarm()" style="display:none;border-color:#ff4466;color:#ff4466">🔕 Parar Alarme</button>
       </div>
     </div>
   </div>
@@ -679,6 +693,61 @@ function updateChrono(){
   document.getElementById('chrono-display').textContent=`${p(h)}:${p(m)}:${p(s)}`;
 }
 
+// ─── ALARM SYSTEM ────────────────────────────────────────────────────────────
+let audioCtx = null;
+let alarmInterval = null;
+
+function getAudioCtx(){
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playTone(type, duration){
+  const ctx = getAudioCtx();
+  const patterns = {
+    digital: [{f:880,d:0.1},{f:0,d:0.05},{f:880,d:0.1},{f:0,d:0.05},{f:880,d:0.1},{f:0,d:0.3}],
+    gentle:  [{f:523,d:0.4},{f:659,d:0.4},{f:784,d:0.6}],
+    urgent:  [{f:1200,d:0.08},{f:0,d:0.04},{f:1200,d:0.08},{f:0,d:0.04},{f:1200,d:0.08},{f:0,d:0.04},{f:1200,d:0.08},{f:0,d:0.2}],
+    bell:    [{f:1047,d:0.6},{f:0,d:0.1},{f:1047,d:0.3},{f:0,d:0.5}],
+    beep:    [{f:700,d:0.2},{f:0,d:0.2},{f:700,d:0.2},{f:0,d:0.6}]
+  };
+  const seq = patterns[type] || patterns.digital;
+  let t = ctx.currentTime;
+  seq.forEach(note => {
+    if(note.f > 0){
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = note.f;
+      osc.type = type === 'bell' ? 'sine' : type === 'gentle' ? 'sine' : 'square';
+      gain.gain.setValueAtTime(0.4, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + note.d);
+      osc.start(t); osc.stop(t + note.d);
+    }
+    t += note.d;
+  });
+}
+
+function previewTone(){
+  const type = document.getElementById('alarm-tone').value;
+  playTone(type, 2);
+}
+
+function startAlarm(){
+  const type = document.getElementById('alarm-tone').value;
+  document.getElementById('stop-alarm-btn').style.display = 'inline-block';
+  document.getElementById('cd-display').style.color = '#ff4466';
+  playTone(type, 3);
+  alarmInterval = setInterval(()=> playTone(type, 3), 3000);
+}
+
+function stopAlarm(){
+  clearInterval(alarmInterval); alarmInterval = null;
+  document.getElementById('stop-alarm-btn').style.display = 'none';
+  document.getElementById('cd-display').style.color = '';
+  document.getElementById('cd-display').textContent = '00:00:00';
+}
+
 // ─── COUNTDOWN ───────────────────────────────────────────────────────────────
 let cdRunning=false, cdRemaining=300, cdInterval2=null;
 function cdToggle(){
@@ -693,8 +762,7 @@ function cdToggle(){
       if(cdRemaining<=0){
         clearInterval(cdInterval2); cdInterval2=null; cdRunning=false;
         btn.textContent=T.start;
-        document.getElementById('cd-display').style.color='#ff4466';
-        alert(T.alert_done);
+        startAlarm();
       }
     },1000);
     cdRunning=true; btn.textContent=T.pause;
@@ -704,8 +772,7 @@ function cdToggle(){
 }
 function cdReset(){
   clearInterval(cdInterval2); cdInterval2=null; cdRunning=false; cdRemaining=0;
-  document.getElementById('cd-display').textContent='00:00:00';
-  document.getElementById('cd-display').style.color='';
+  stopAlarm();
   document.getElementById('cd-btn').textContent=TRANSLATIONS[currentLang].start;
 }
 function updateCD(){ const h=Math.floor(cdRemaining/3600),m=Math.floor((cdRemaining%3600)/60),s=cdRemaining%60; document.getElementById('cd-display').textContent=`${p(h)}:${p(m)}:${p(s)}`; }
