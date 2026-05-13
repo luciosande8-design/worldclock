@@ -11,32 +11,31 @@
   "lang": "pt",
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%230a0a0f'/%3E%3Ccircle cx='96' cy='96' r='70' fill='none' stroke='%2300e5a0' stroke-width='6'/%3E%3Ccircle cx='96' cy='96' r='50' fill='none' stroke='%2300b8d4' stroke-width='3' stroke-dasharray='8,6'/%3E%3Cline x1='96' y1='96' x2='134' y2='52' stroke='%2300e5a0' stroke-width='7' stroke-linecap='round'/%3E%3Cline x1='96' y1='96' x2='70' y2='128' stroke='%2300b8d4' stroke-width='5' stroke-linecap='round'/%3E%3Ccircle cx='96' cy='96' r='10' fill='%2300e5a0'/%3E%3Cline x1='96' y1='26' x2='96' y2='40' stroke='%2300e5a0' stroke-width='6' stroke-linecap='round'/%3E%3Cline x1='166' y1='96' x2='152' y2='96' stroke='%2300e5a0' stroke-width='6' stroke-linecap='round'/%3E%3Cline x1='96' y1='166' x2='96' y2='152' stroke='%2300e5a0' stroke-width='6' stroke-linecap='round'/%3E%3Cline x1='26' y1='96' x2='40' y2='96' stroke='%2300e5a0' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E",
+      "src": "icon-192.svg",
       "sizes": "192x192",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%230a0a0f'/%3E%3Ccircle cx='256' cy='256' r='190' fill='none' stroke='%2300e5a0' stroke-width='14'/%3E%3Ccircle cx='256' cy='256' r='130' fill='none' stroke='%2300b8d4' stroke-width='6' stroke-dasharray='16,12'/%3E%3Cline x1='256' y1='256' x2='358' y2='134' stroke='%2300e5a0' stroke-width='16' stroke-linecap='round'/%3E%3Cline x1='256' y1='256' x2='188' y2='336' stroke='%2300b8d4' stroke-width='12' stroke-linecap='round'/%3E%3Ccircle cx='256' cy='256' r='22' fill='%2300e5a0'/%3E%3Cline x1='256' y1='66' x2='256' y2='100' stroke='%2300e5a0' stroke-width='14' stroke-linecap='round'/%3E%3Cline x1='446' y1='256' x2='412' y2='256' stroke='%2300e5a0' stroke-width='14' stroke-linecap='round'/%3E%3Cline x1='256' y1='446' x2='256' y2='412' stroke='%2300e5a0' stroke-width='14' stroke-linecap='round'/%3E%3Cline x1='66' y1='256' x2='100' y2='256' stroke='%2300e5a0' stroke-width='14' stroke-linecap='round'/%3E%3C/svg%3E",
+      "src": "icon-512.svg",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ],
   "categories": ["utilities", "productivity"],
-  "screenshots": [],
   "shortcuts": [
     {
       "name": "Fusos Horários",
       "short_name": "Fusos",
-      "url": "/worldclock/#zones",
+      "url": "/worldclock/",
       "description": "Ver fusos horários do mundo"
     },
     {
-      "name": "Cronômetro",
-      "short_name": "Cronômetro",
-      "url": "/worldclock/#tools",
-      "description": "Abrir cronômetro"
+      "name": "Focus Mode",
+      "short_name": "Focus",
+      "url": "/worldclock/",
+      "description": "Modo de produtividade Pomodoro"
     }
   ]
 }
