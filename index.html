@@ -222,17 +222,33 @@ footer a{color:var(--accent2);text-decoration:none}
         <input type="number" id="cd-s" value="0" min="0" max="59">
       </div>
       <div class="chrono-display" id="cd-display" style="color:var(--accent2)">00:05:00</div>
-      <div style="margin:10px 0 6px;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">🔔 Tom do Alarme</div>
-      <div style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:12px">
-        <select id="alarm-tone" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px;color:var(--text);font-family:Sora,sans-serif;font-size:12px">
-          <option value="digital">⏰ Digital — Clássico despertador</option>
-          <option value="gentle">🌅 Suave — Acordar gentil</option>
-          <option value="urgent" selected>🚨 Urgente — Alerta forte</option>
-          <option value="bell">🔔 Sino — Tom de sino</option>
-          <option value="beep">📟 Beep — Tom simples</option>
-        </select>
-        <button class="btn" onclick="previewTone()" style="font-size:11px;padding:8px 10px">▶ Testar</button>
+
+      <!-- Tom activo — compacto -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:10px 0 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:16px">🚨</span>
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--text)" id="active-tone-label">Urgente — Alerta forte</div>
+            <div style="font-size:10px;color:var(--muted)">Tom do alarme activo</div>
+          </div>
+        </div>
+        <button onclick="toggleTonePanel()" style="background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 10px;color:var(--muted);font-size:11px;cursor:pointer;font-family:Sora,sans-serif" id="change-tone-btn">⚙ Mudar</button>
       </div>
+
+      <!-- Painel de selecção — oculto por defeito -->
+      <div id="tone-panel" style="display:none;margin-bottom:12px">
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px">
+          <select id="alarm-tone" onchange="updateToneLabel()" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px;color:var(--text);font-family:Sora,sans-serif;font-size:12px">
+            <option value="digital">⏰ Digital — Clássico despertador</option>
+            <option value="gentle">🌅 Suave — Acordar gentil</option>
+            <option value="urgent" selected>🚨 Urgente — Alerta forte</option>
+            <option value="bell">🔔 Sino — Tom de sino</option>
+            <option value="beep">📟 Beep — Tom simples</option>
+          </select>
+          <button class="btn" onclick="previewTone()" style="font-size:11px;padding:8px 10px">▶ Testar</button>
+        </div>
+      </div>
+
       <div class="chrono-btns">
         <button class="btn primary" id="cd-btn" onclick="cdToggle()">▶</button>
         <button class="btn danger" onclick="cdReset()" data-i18n="reset">✕ Reset</button>
@@ -775,6 +791,28 @@ function playTone(type, duration){
 function previewTone(){
   const type = document.getElementById('alarm-tone').value;
   playTone(type, 2);
+}
+
+function toggleTonePanel(){
+  const panel = document.getElementById('tone-panel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+const TONE_LABELS = {
+  digital: '⏰ Digital — Clássico despertador',
+  gentle:  '🌅 Suave — Acordar gentil',
+  urgent:  '🚨 Urgente — Alerta forte',
+  bell:    '🔔 Sino — Tom de sino',
+  beep:    '📟 Beep — Tom simples'
+};
+
+function updateToneLabel(){
+  const type = document.getElementById('alarm-tone').value;
+  const label = document.getElementById('active-tone-label');
+  const icon = label.previousElementSibling;
+  if(label) label.textContent = TONE_LABELS[type].split('— ')[1] || TONE_LABELS[type];
+  if(icon) icon.textContent = TONE_LABELS[type].split(' ')[0];
+  document.getElementById('tone-panel').style.display = 'none';
 }
 
 function startAlarm(){
