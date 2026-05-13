@@ -102,9 +102,36 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 2
 .page{display:none}
 .page.active{display:block}
 select option{background:#1c1c28}
-footer{text-align:center;padding:20px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);margin-top:20px}
-footer a{color:var(--accent2);text-decoration:none}
-@media(max-width:700px){.layout{grid-template-columns:1fr}.world-grid{grid-template-columns:repeat(2,1fr)}.big-time{font-size:44px}}
+.focus-tab{color:#a78bfa!important;border:1px solid rgba(167,139,250,.3)!important}
+.focus-tab.active{background:rgba(167,139,250,.15)!important;color:#a78bfa!important}
+body.focus-mode{background:linear-gradient(135deg,#0a0a0f 0%,#0f0a1a 50%,#0a0f1a 100%)!important;transition:background 1s}
+body.focus-mode nav{border-bottom-color:#a78bfa44!important}
+.pomo-ring{position:relative;width:200px;height:200px;margin:0 auto}
+.pomo-ring svg{transform:rotate(-90deg)}
+.pomo-ring .ring-bg{fill:none;stroke:var(--surface2);stroke-width:8}
+.pomo-ring .ring-fg{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .5s ease,stroke .5s}
+.pomo-time{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.pomo-time .t{font-family:'Space Mono',monospace;font-size:36px;font-weight:700;color:var(--text)}
+.pomo-time .s{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+.pomo-mode-btn{padding:8px 16px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-family:'Sora',sans-serif;font-size:12px;cursor:pointer;transition:all .2s}
+.pomo-mode-btn.active{background:rgba(167,139,250,.2);border-color:#a78bfa;color:#a78bfa}
+.task-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;transition:opacity .2s}
+.task-item.done{opacity:.5}
+.task-item.done .task-text{text-decoration:line-through}
+.task-check{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .2s}
+.task-check.checked{background:#a78bfa;border-color:#a78bfa;color:#fff}
+.task-text{flex:1;font-size:13px;color:var(--text)}
+.task-tag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+.tag-work{background:rgba(0,229,160,.1);color:var(--accent)}
+.tag-study{background:rgba(0,184,212,.1);color:var(--accent2)}
+.tag-personal{background:rgba(167,139,250,.1);color:#a78bfa}
+.tag-meeting{background:rgba(255,159,64,.1);color:#ff9f40}
+.streak-flame{font-size:32px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.toast-notif{position:fixed;top:80px;right:20px;background:linear-gradient(135deg,#1a0f2e,#0f1a2e);border:1px solid #a78bfa;border-radius:12px;padding:14px 18px;z-index:9999;max-width:300px;animation:slideIn .3s ease}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.progress-bar-wrap{background:var(--surface2);border-radius:20px;height:8px;overflow:hidden}
+.progress-bar-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#a78bfa,#00e5a0);transition:width .5s}
 </style>
 </head>
 <body>
@@ -143,6 +170,7 @@ footer a{color:var(--accent2);text-decoration:none}
     <button class="tab" onclick="showPage('zones',this)" data-i18n="nav_zones">Fusos</button>
     <button class="tab" onclick="showPage('tools',this)" data-i18n="nav_tools">Ferramentas</button>
     <button class="tab" onclick="showPage('cal',this)" data-i18n="nav_cal">Calendário</button>
+    <button class="tab focus-tab" onclick="showPage('focus',this)">🎯 Focus Mode</button>
   </div>
   <div class="nav-right">
     <select class="lang-select" onchange="setLang(this.value)" id="lang-selector">
@@ -321,6 +349,145 @@ footer a{color:var(--accent2);text-decoration:none}
     <div class="cal-grid" id="cal-grid"></div>
     <div style="margin-top:16px;font-size:12px;color:var(--muted)">
       <span data-i18n="week_label">Week</span>: <span id="week-num" style="color:var(--accent);font-weight:600"></span>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- PAGE: FOCUS MODE -->
+<div id="page-focus" class="page">
+<div style="max-width:1000px;margin:0 auto;padding:20px 24px">
+
+  <!-- Toast de boas-vindas -->
+  <div id="focus-toast" style="background:linear-gradient(135deg,#1a0f2e,#0f1a2e);border:1px solid #a78bfa;border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px">
+    <span style="font-size:24px">🎯</span>
+    <div>
+      <div style="font-size:14px;font-weight:600;color:#a78bfa">Novidade — Focus Mode</div>
+      <div style="font-size:12px;color:var(--muted)">Gerencie o tempo global e o foco pessoal num só lugar. Técnica Pomodoro integrada ao WorldClock.</div>
+    </div>
+    <button onclick="document.getElementById('focus-toast').style.display='none'" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px">✕</button>
+  </div>
+
+  <!-- Streak + Quote -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+    <div class="panel" style="display:flex;align-items:center;gap:16px">
+      <div class="streak-flame">🔥</div>
+      <div>
+        <div style="font-size:24px;font-weight:700;color:#a78bfa" id="streak-count">0</div>
+        <div style="font-size:11px;color:var(--muted);letter-spacing:1px">DIAS DE STREAK</div>
+        <div style="font-size:11px;color:var(--muted)" id="sessions-today">0 sessões hoje</div>
+      </div>
+    </div>
+    <div class="panel" style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:24px">💬</span>
+      <div style="font-size:13px;color:var(--text);font-style:italic;line-height:1.5" id="daily-quote">"A concentração é a raiz de toda a habilidade humana." — Bruce Lee</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+
+    <!-- COLUNA ESQUERDA: Pomodoro -->
+    <div>
+      <div class="panel">
+        <!-- Modos -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
+          <button class="pomo-mode-btn active" onclick="setPomoMode('work',25,this)">💼 Trabalho</button>
+          <button class="pomo-mode-btn" onclick="setPomoMode('study',25,this)">📚 Estudo</button>
+          <button class="pomo-mode-btn" onclick="setPomoMode('meeting',50,this)">🌍 Reunião</button>
+          <button class="pomo-mode-btn" onclick="setPomoMode('deep',90,this)">🧠 Deep Work</button>
+        </div>
+
+        <!-- Anel circular -->
+        <div class="pomo-ring">
+          <svg width="200" height="200" viewBox="0 0 200 200">
+            <circle class="ring-bg" cx="100" cy="100" r="88"/>
+            <circle class="ring-fg" id="pomo-ring-fg" cx="100" cy="100" r="88" stroke="#a78bfa" stroke-dasharray="553" stroke-dashoffset="0"/>
+          </svg>
+          <div class="pomo-time">
+            <div class="t" id="pomo-display">25:00</div>
+            <div class="s" id="pomo-state-label">FOCO</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px">Ciclo <span id="pomo-cycle">1</span>/4</div>
+          </div>
+        </div>
+
+        <!-- Controlos -->
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:16px">
+          <button class="btn primary" id="pomo-btn" onclick="pomoToggle()" style="background:#a78bfa;border-color:#a78bfa;min-width:100px">▶ Iniciar</button>
+          <button class="btn" onclick="pomoReset()">↺ Reset</button>
+          <button class="btn" onclick="pomoSkip()">⏭ Skip</button>
+        </div>
+
+        <!-- Ciclos visuais -->
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:14px" id="pomo-dots">
+          <div style="width:12px;height:12px;border-radius:50%;background:var(--surface2);border:2px solid var(--border)" id="dot-0"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:var(--surface2);border:2px solid var(--border)" id="dot-1"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:var(--surface2);border:2px solid var(--border)" id="dot-2"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:var(--surface2);border:2px solid var(--border)" id="dot-3"></div>
+        </div>
+
+        <!-- Meta diária -->
+        <div style="margin-top:16px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px">
+            <span>Meta diária</span>
+            <span id="daily-progress-label">0 / 8 sessões</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="daily-progress-bar" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estatísticas -->
+      <div class="panel" style="margin-top:16px">
+        <div class="panel-title">📊 Estatísticas</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center">
+          <div style="background:var(--surface2);border-radius:10px;padding:12px">
+            <div style="font-size:22px;font-weight:700;color:#a78bfa" id="stat-today">0</div>
+            <div style="font-size:10px;color:var(--muted)">Hoje</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:10px;padding:12px">
+            <div style="font-size:22px;font-weight:700;color:var(--accent)" id="stat-week">0</div>
+            <div style="font-size:10px;color:var(--muted)">Esta semana</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:10px;padding:12px">
+            <div style="font-size:22px;font-weight:700;color:var(--accent2)" id="stat-total">0</div>
+            <div style="font-size:10px;color:var(--muted)">Total</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUNA DIREITA: Tarefas + Notas -->
+    <div>
+      <!-- Bloco de notas da sessão -->
+      <div class="panel">
+        <div class="panel-title">📝 Sessão Actual</div>
+        <input type="text" id="session-goal" placeholder="O que pretendes concluir nesta sessão?" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:Sora,sans-serif;font-size:13px;margin-bottom:8px">
+        <textarea id="session-notes" placeholder="Notas rápidas, ideias, distrações para rever depois..." rows="4" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:Sora,sans-serif;font-size:12px;resize:none"></textarea>
+      </div>
+
+      <!-- Lista de tarefas -->
+      <div class="panel" style="margin-top:16px">
+        <div class="panel-title">✅ Tarefas do Dia</div>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <input type="text" id="task-input" placeholder="Nova tarefa..." onkeydown="if(event.key==='Enter')addTask()" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:Sora,sans-serif;font-size:13px">
+          <select id="task-tag-select" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px;color:var(--text);font-family:Sora,sans-serif;font-size:12px">
+            <option value="work">💼 Trabalho</option>
+            <option value="study">📚 Estudo</option>
+            <option value="personal">👤 Pessoal</option>
+            <option value="meeting">🌍 Reunião</option>
+          </select>
+          <button class="btn primary" onclick="addTask()" style="background:#a78bfa;border-color:#a78bfa;padding:8px 14px">+</button>
+        </div>
+        <div id="task-list"></div>
+        <div style="margin-top:10px;font-size:11px;color:var(--muted)" id="task-summary">0 tarefas · 0 concluídas</div>
+      </div>
+
+      <!-- Fusos activos durante sessão -->
+      <div class="panel" style="margin-top:16px">
+        <div class="panel-title">🌍 Países em Horário Laboral Agora</div>
+        <div id="working-hours-list" style="font-size:12px;color:var(--text)"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -951,6 +1118,321 @@ function toggleTheme(){
   updateMainClock();
   updateAllCities();
 })();
+
+// ─── POMODORO SYSTEM ─────────────────────────────────────────────────────────
+const QUOTES = {
+  pt: [
+    '"A concentração é a raiz de toda a habilidade humana." — Bruce Lee',
+    '"Faz uma coisa de cada vez, e fá-la bem." — Peter Drucker',
+    '"O segredo de avançar é começar." — Mark Twain',
+    '"A disciplina é a ponte entre metas e realizações." — Jim Rohn',
+    '"O tempo é o recurso mais valioso que temos." — Peter Drucker',
+    '"Grandes resultados requerem grande ambição." — Heraclito',
+    '"Não é a força, mas a constância dos esforços que produz grandes resultados." — Samuel Johnson',
+  ],
+  en: [
+    '"Concentration is the root of all human ability." — Bruce Lee',
+    '"Do one thing at a time, and do it well." — Peter Drucker',
+    '"The secret of getting ahead is getting started." — Mark Twain',
+    '"Discipline is the bridge between goals and accomplishment." — Jim Rohn',
+    '"Time is the most valuable resource we have." — Peter Drucker',
+    '"Great results require great ambition." — Heraclitus',
+    '"It\'s not the strength but the constancy of effort that produces results." — Samuel Johnson',
+  ],
+  fr: [
+    '"La concentration est la racine de toute compétence humaine." — Bruce Lee',
+    '"Faites une chose à la fois, et faites-la bien." — Peter Drucker',
+    '"Le secret pour avancer est de commencer." — Mark Twain',
+    '"La discipline est le pont entre les objectifs et les réalisations." — Jim Rohn',
+    '"Le temps est la ressource la plus précieuse." — Peter Drucker',
+    '"Grands résultats exigent grande ambition." — Héraclite',
+    '"Ce n\'est pas la force mais la constance qui produit de grands résultats." — Samuel Johnson',
+  ],
+  es: [
+    '"La concentración es la raíz de toda habilidad humana." — Bruce Lee',
+    '"Haz una cosa a la vez y hazla bien." — Peter Drucker',
+    '"El secreto para avanzar es comenzar." — Mark Twain',
+    '"La disciplina es el puente entre las metas y los logros." — Jim Rohn',
+    '"El tiempo es el recurso más valioso que tenemos." — Peter Drucker',
+    '"Grandes resultados requieren gran ambición." — Heráclito',
+    '"No es la fuerza sino la constancia la que produce grandes resultados." — Samuel Johnson',
+  ],
+  ar: [
+    '"التركيز هو جذر كل القدرات البشرية." — بروس لي',
+    '"افعل شيئاً واحداً في كل مرة وافعله بشكل جيد." — بيتر دراكر',
+    '"سر التقدم هو البداية." — مارك توين',
+    '"الانضباط هو الجسر بين الأهداف والإنجازات." — جيم رون',
+    '"الوقت هو أثمن مورد لدينا." — بيتر دراكر',
+    '"النتائج العظيمة تتطلب طموحاً عظيماً." — هيراقليطس',
+    '"ليست القوة بل الثبات هو ما ينتج نتائج عظيمة." — صامويل جونسون',
+  ],
+  zh: [
+    '"专注是人类所有能力的根源。" — 李小龙',
+    '"一次只做一件事，把它做好。" — 彼得·德鲁克',
+    '"前进的秘诀是开始行动。" — 马克·吐温',
+    '"纪律是目标与成就之间的桥梁。" — 吉姆·罗恩',
+    '"时间是我们最宝贵的资源。" — 彼得·德鲁克',
+    '"伟大的结果需要伟大的抱负。" — 赫拉克利特',
+    '"不是力量而是持续的努力产生伟大的结果。" — 塞缪尔·约翰逊',
+  ],
+  de: [
+    '"Konzentration ist die Wurzel aller menschlichen Fähigkeiten." — Bruce Lee',
+    '"Tu eine Sache auf einmal und tu sie gut." — Peter Drucker',
+    '"Das Geheimnis des Vorankommens ist der Anfang." — Mark Twain',
+    '"Disziplin ist die Brücke zwischen Zielen und Leistungen." — Jim Rohn',
+    '"Zeit ist die wertvollste Ressource, die wir haben." — Peter Drucker',
+    '"Große Ergebnisse erfordern großen Ehrgeiz." — Heraklit',
+    '"Nicht Stärke, sondern Beständigkeit erzeugt große Ergebnisse." — Samuel Johnson',
+  ],
+  it: [
+    '"La concentrazione è la radice di tutte le abilità umane." — Bruce Lee',
+    '"Fai una cosa alla volta e falla bene." — Peter Drucker',
+    '"Il segreto per andare avanti è iniziare." — Mark Twain',
+    '"La disciplina è il ponte tra gli obiettivi e i risultati." — Jim Rohn',
+    '"Il tempo è la risorsa più preziosa che abbiamo." — Peter Drucker',
+    '"Grandi risultati richiedono grande ambizione." — Eraclito',
+    '"Non è la forza ma la costanza che produce grandi risultati." — Samuel Johnson',
+  ],
+  ja: [
+    '"集中力はすべての人間能力の根源です。" — ブルース・リー',
+    '"一度に一つのことをし、それをうまくやれ。" — ピーター・ドラッカー',
+    '"前進の秘訣は始めることだ。" — マーク・トウェイン',
+    '"規律は目標と達成の橋である。" — ジム・ローン',
+    '"時間は私たちが持つ最も貴重な資源だ。" — ピーター・ドラッカー',
+    '"偉大な結果には偉大な野心が必要だ。" — ヘラクレイトス',
+    '"偉大な結果を生むのは力ではなく一貫性だ。" — サミュエル・ジョンソン',
+  ],
+  ru: [
+    '"Концентрация — корень всех человеческих способностей." — Брюс Ли',
+    '"Делай одно дело за раз и делай его хорошо." — Питер Друкер',
+    '"Секрет движения вперёд — это начало." — Марк Твен',
+    '"Дисциплина — это мост между целями и достижениями." — Джим Рон',
+    '"Время — наш самый ценный ресурс." — Питер Друкер',
+    '"Великие результаты требуют великих амбиций." — Гераклит',
+    '"Не сила, а постоянство усилий даёт великие результаты." — Сэмюэл Джонсон',
+  ],
+};
+
+let pomoState = 'idle'; // idle, focus, short_break, long_break
+let pomoMode = 'work';
+let pomoMinutes = 25;
+let pomoSeconds = 0;
+let pomoTotal = 25 * 60;
+let pomoRemaining = 25 * 60;
+let pomoInterval = null;
+let pomoCycle = 0;
+let pomoSessionsToday = 0;
+let pomoSessionsWeek = 0;
+let pomoSessionsTotal = 0;
+let pomoStreak = 0;
+let tasks = [];
+
+// Load from localStorage
+function pomoLoad(){
+  try{
+    const d = localStorage.getItem('wc_pomo');
+    if(d){
+      const p = JSON.parse(d);
+      pomoSessionsToday = p.today || 0;
+      pomoSessionsWeek = p.week || 0;
+      pomoSessionsTotal = p.total || 0;
+      pomoStreak = p.streak || 0;
+      tasks = p.tasks || [];
+      const today = new Date().toDateString();
+      if(p.date !== today){ pomoSessionsToday = 0; }
+    }
+  }catch(e){}
+  pomoUpdateStats();
+  renderTasks();
+  const langQuotes = QUOTES[currentLang] || QUOTES['en'];
+  document.getElementById('daily-quote').textContent = langQuotes[Math.floor(Math.random()*langQuotes.length)];
+  updateWorkingHours();
+}
+
+function pomoSave(){
+  try{
+    localStorage.setItem('wc_pomo', JSON.stringify({
+      today: pomoSessionsToday, week: pomoSessionsWeek,
+      total: pomoSessionsTotal, streak: pomoStreak,
+      tasks, date: new Date().toDateString()
+    }));
+  }catch(e){}
+}
+
+function pomoUpdateStats(){
+  document.getElementById('stat-today').textContent = pomoSessionsToday;
+  document.getElementById('stat-week').textContent = pomoSessionsWeek;
+  document.getElementById('stat-total').textContent = pomoSessionsTotal;
+  document.getElementById('streak-count').textContent = pomoStreak;
+  document.getElementById('sessions-today').textContent = pomoSessionsToday + ' sessões hoje';
+  const pct = Math.min((pomoSessionsToday / 8) * 100, 100);
+  document.getElementById('daily-progress-bar').style.width = pct + '%';
+  document.getElementById('daily-progress-label').textContent = pomoSessionsToday + ' / 8 sessões';
+}
+
+function setPomoMode(mode, mins, btn){
+  pomoMode = mode; pomoMinutes = mins;
+  pomoReset();
+  document.querySelectorAll('.pomo-mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function pomoToggle(){
+  const btn = document.getElementById('pomo-btn');
+  if(pomoState === 'idle' || pomoState === 'paused'){
+    if(pomoState === 'idle'){ pomoRemaining = pomoMinutes * 60; pomoTotal = pomoRemaining; }
+    pomoState = 'running';
+    btn.textContent = '⏸ Pausar';
+    document.body.classList.add('focus-mode');
+    pomoInterval = setInterval(pomoTick, 1000);
+  } else if(pomoState === 'running'){
+    pomoState = 'paused';
+    btn.textContent = '▶ Continuar';
+    clearInterval(pomoInterval);
+  }
+}
+
+function pomoTick(){
+  if(pomoRemaining <= 0){ pomoComplete(); return; }
+  pomoRemaining--;
+  const m = Math.floor(pomoRemaining / 60);
+  const s = pomoRemaining % 60;
+  const disp = p(m) + ':' + p(s);
+  document.getElementById('pomo-display').textContent = disp;
+  document.title = disp + ' · WorldClock.live';
+  const pct = 1 - (pomoRemaining / pomoTotal);
+  const circ = 553;
+  document.getElementById('pomo-ring-fg').style.strokeDashoffset = circ * pct;
+}
+
+function pomoComplete(){
+  clearInterval(pomoInterval);
+  pomoState = 'idle';
+  document.getElementById('pomo-btn').textContent = '▶ Iniciar';
+  document.title = 'WorldClock.live — Hora Exata no Mundo';
+
+  if(document.getElementById('pomo-state-label').textContent === 'FOCO'){
+    pomoSessionsToday++; pomoSessionsWeek++; pomoSessionsTotal++;
+    pomoCycle = (pomoCycle + 1) % 4;
+    if(pomoCycle === 0){ pomoStreak++; }
+    document.getElementById('dot-' + ((pomoCycle === 0 ? 4 : pomoCycle) - 1)).style.background = '#a78bfa';
+    document.getElementById('pomo-cycle').textContent = pomoCycle + 1;
+    pomoSave(); pomoUpdateStats();
+    if(pomoCycle % 4 === 0){
+      startBreak(15, 'PAUSA LONGA', '#00e5a0');
+    } else {
+      startBreak(5, 'PAUSA CURTA', '#00b8d4');
+    }
+  } else {
+    document.getElementById('pomo-state-label').textContent = 'FOCO';
+    document.getElementById('pomo-ring-fg').style.stroke = '#a78bfa';
+    document.body.classList.remove('focus-mode');
+  }
+  playTone('urgent', 2);
+}
+
+function startBreak(mins, label, color){
+  pomoRemaining = mins * 60; pomoTotal = pomoRemaining;
+  document.getElementById('pomo-state-label').textContent = label;
+  document.getElementById('pomo-ring-fg').style.stroke = color;
+  document.getElementById('pomo-display').textContent = p(mins) + ':00';
+  document.body.classList.remove('focus-mode');
+  pomoState = 'running';
+  document.getElementById('pomo-btn').textContent = '⏸ Pausar';
+  pomoInterval = setInterval(pomoTick, 1000);
+}
+
+function pomoReset(){
+  clearInterval(pomoInterval);
+  pomoState = 'idle';
+  pomoRemaining = pomoMinutes * 60;
+  pomoTotal = pomoRemaining;
+  document.getElementById('pomo-display').textContent = p(pomoMinutes) + ':00';
+  document.getElementById('pomo-state-label').textContent = 'FOCO';
+  document.getElementById('pomo-ring-fg').style.strokeDashoffset = '0';
+  document.getElementById('pomo-ring-fg').style.stroke = '#a78bfa';
+  document.getElementById('pomo-btn').textContent = '▶ Iniciar';
+  document.title = 'WorldClock.live — Hora Exata no Mundo';
+  document.body.classList.remove('focus-mode');
+}
+
+function pomoSkip(){
+  clearInterval(pomoInterval);
+  pomoComplete();
+}
+
+// ─── TASKS ───────────────────────────────────────────────────────────────────
+const TAG_LABELS = {work:'💼 Trabalho', study:'📚 Estudo', personal:'👤 Pessoal', meeting:'🌍 Reunião'};
+const TAG_CLASSES = {work:'tag-work', study:'tag-study', personal:'tag-personal', meeting:'tag-meeting'};
+
+function addTask(){
+  const input = document.getElementById('task-input');
+  const tag = document.getElementById('task-tag-select').value;
+  const text = input.value.trim();
+  if(!text) return;
+  tasks.push({id: Date.now(), text, tag, done: false, date: new Date().toDateString()});
+  input.value = '';
+  renderTasks();
+  pomoSave();
+}
+
+function toggleTask(id){
+  const t = tasks.find(t => t.id === id);
+  if(t) t.done = !t.done;
+  renderTasks();
+  pomoSave();
+}
+
+function deleteTask(id){
+  tasks = tasks.filter(t => t.id !== id);
+  renderTasks();
+  pomoSave();
+}
+
+function renderTasks(){
+  const list = document.getElementById('task-list');
+  const today = new Date().toDateString();
+  const todayTasks = tasks.filter(t => t.date === today);
+  list.innerHTML = todayTasks.map(t => `
+    <div class="task-item ${t.done?'done':''}">
+      <div class="task-check ${t.done?'checked':''}" onclick="toggleTask(${t.id})">${t.done?'✓':''}</div>
+      <span class="task-text">${t.text}</span>
+      <span class="task-tag ${TAG_CLASSES[t.tag]}">${TAG_LABELS[t.tag]}</span>
+      <button onclick="deleteTask(${t.id})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px">✕</button>
+    </div>
+  `).join('');
+  const done = todayTasks.filter(t => t.done).length;
+  document.getElementById('task-summary').textContent = todayTasks.length + ' tarefas · ' + done + ' concluídas';
+}
+
+// ─── WORKING HOURS ───────────────────────────────────────────────────────────
+function updateWorkingHours(){
+  const zones = [
+    {city:'Lisboa',tz:'Europe/Lisbon'},{city:'Londres',tz:'Europe/London'},
+    {city:'Paris',tz:'Europe/Paris'},{city:'Nova Iorque',tz:'America/New_York'},
+    {city:'Dubai',tz:'Asia/Dubai'},{city:'Tóquio',tz:'Asia/Tokyo'},
+    {city:'São Paulo',tz:'America/Sao_Paulo'},{city:'Nairobi',tz:'Africa/Nairobi'},
+    {city:'Singapura',tz:'Asia/Singapore'},{city:'Sydney',tz:'Australia/Sydney'},
+  ];
+  const working = zones.filter(z => {
+    try{
+      const h = parseInt(new Date().toLocaleTimeString('en',{timeZone:z.tz,hour:'2-digit',hour12:false}));
+      return h >= 8 && h < 18;
+    }catch(e){ return false; }
+  });
+  const el = document.getElementById('working-hours-list');
+  if(el){
+    if(working.length === 0){
+      el.innerHTML = '<div style="color:var(--muted);font-size:12px">Nenhuma cidade principal em horário laboral agora.</div>';
+    } else {
+      el.innerHTML = working.map(z => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>${z.city}</span><span style="color:var(--accent);font-size:11px">✅ Em trabalho</span></div>`).join('');
+    }
+  }
+}
+setInterval(updateWorkingHours, 60000);
+
+// Init Pomodoro
+pomoLoad();
 
 // ─── PWA SERVICE WORKER ──────────────────────────────────────────────────────
 if('serviceWorker' in navigator){
