@@ -130,6 +130,7 @@ body.focus-mode nav{border-bottom-color:#a78bfa44!important}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
 .toast-notif{position:fixed;top:80px;right:20px;background:linear-gradient(135deg,#1a0f2e,#0f1a2e);border:1px solid #a78bfa;border-radius:12px;padding:14px 18px;z-index:9999;max-width:300px;animation:slideIn .3s ease}
 @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes slideUp{from{transform:translateX(-50%) translateY(20px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
 .progress-bar-wrap{background:var(--surface2);border-radius:20px;height:8px;overflow:hidden}
 .progress-bar-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#a78bfa,#00e5a0);transition:width .5s}
 </style>
@@ -362,8 +363,8 @@ body.focus-mode nav{border-bottom-color:#a78bfa44!important}
   <div id="focus-toast" style="background:linear-gradient(135deg,#1a0f2e,#0f1a2e);border:1px solid #a78bfa;border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px">
     <span style="font-size:24px">🎯</span>
     <div>
-      <div style="font-size:14px;font-weight:600;color:#a78bfa">Novidade — Focus Mode</div>
-      <div style="font-size:12px;color:var(--muted)">Gerencie o tempo global e o foco pessoal num só lugar. Técnica Pomodoro integrada ao WorldClock.</div>
+      <div style="font-size:14px;font-weight:600;color:#a78bfa" id="focus-toast-title">Novidade — Focus Mode</div>
+      <div style="font-size:12px;color:var(--muted)" id="focus-toast-desc">Gerencie o tempo global e o foco pessoal num só lugar.</div>
     </div>
     <button onclick="document.getElementById('focus-toast').style.display='none'" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px">✕</button>
   </div>
@@ -374,13 +375,13 @@ body.focus-mode nav{border-bottom-color:#a78bfa44!important}
       <div class="streak-flame">🔥</div>
       <div>
         <div style="font-size:24px;font-weight:700;color:#a78bfa" id="streak-count">0</div>
-        <div style="font-size:11px;color:var(--muted);letter-spacing:1px">DIAS DE STREAK</div>
+        <div style="font-size:11px;color:var(--muted);letter-spacing:1px" id="streak-label">DIAS DE STREAK</div>
         <div style="font-size:11px;color:var(--muted)" id="sessions-today">0 sessões hoje</div>
       </div>
     </div>
     <div class="panel" style="display:flex;align-items:center;gap:12px">
       <span style="font-size:24px">💬</span>
-      <div style="font-size:13px;color:var(--text);font-style:italic;line-height:1.5" id="daily-quote">"A concentração é a raiz de toda a habilidade humana." — Bruce Lee</div>
+      <div style="font-size:13px;color:var(--text);font-style:italic;line-height:1.5" id="daily-quote">...</div>
     </div>
   </div>
 
@@ -391,10 +392,10 @@ body.focus-mode nav{border-bottom-color:#a78bfa44!important}
       <div class="panel">
         <!-- Modos -->
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
-          <button class="pomo-mode-btn active" onclick="setPomoMode('work',25,this)">💼 Trabalho</button>
-          <button class="pomo-mode-btn" onclick="setPomoMode('study',25,this)">📚 Estudo</button>
-          <button class="pomo-mode-btn" onclick="setPomoMode('meeting',50,this)">🌍 Reunião</button>
-          <button class="pomo-mode-btn" onclick="setPomoMode('deep',90,this)">🧠 Deep Work</button>
+          <button class="pomo-mode-btn active" onclick="setPomoMode('work',25,this)" id="mode-work">💼 <span class="pm-work">Trabalho</span></button>
+          <button class="pomo-mode-btn" onclick="setPomoMode('study',25,this)" id="mode-study">📚 <span class="pm-study">Estudo</span></button>
+          <button class="pomo-mode-btn" onclick="setPomoMode('meeting',50,this)" id="mode-meeting">🌍 <span class="pm-meeting">Reunião</span></button>
+          <button class="pomo-mode-btn" onclick="setPomoMode('deep',90,this)" id="mode-deep">🧠 <span class="pm-deep">Deep Work</span></button>
         </div>
 
         <!-- Anel circular -->
@@ -406,15 +407,21 @@ body.focus-mode nav{border-bottom-color:#a78bfa44!important}
           <div class="pomo-time">
             <div class="t" id="pomo-display">25:00</div>
             <div class="s" id="pomo-state-label">FOCO</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:4px">Ciclo <span id="pomo-cycle">1</span>/4</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px"><span id="cycle-label">Ciclo</span> <span id="pomo-cycle">1</span>/4</div>
           </div>
         </div>
 
-        <!-- Controlos -->
-        <div style="display:flex;gap:8px;justify-content:center;margin-top:16px">
-          <button class="btn primary" id="pomo-btn" onclick="pomoToggle()" style="background:#a78bfa;border-color:#a78bfa;min-width:100px">▶ Iniciar</button>
-          <button class="btn" onclick="pomoReset()">↺ Reset</button>
-          <button class="btn" onclick="pomoSkip()">⏭ Skip</button>
+        <!-- Cidade local -->
+        <div id="focus-city-line" style="text-align:center;font-size:11px;color:var(--muted);margin-top:8px">
+          ⏱ <span id="focus-city-text">O seu tempo de foco</span>
+        </div>
+
+        <!-- Zen Mode + Controlos -->
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap">
+          <button class="btn primary" id="pomo-btn" onclick="pomoToggle()" style="background:#a78bfa;border-color:#a78bfa;min-width:100px">▶ <span id="pomo-btn-label">Iniciar</span></button>
+          <button class="btn" onclick="pomoReset()" id="pomo-reset-btn">↺ Reset</button>
+          <button class="btn" onclick="pomoSkip()" id="pomo-skip-btn">⏭ Skip</button>
+          <button class="btn" onclick="toggleZenMode()" id="zen-btn" style="border-color:#a78bfa44;color:#a78bfa;font-size:11px">🧘 Zen</button>
         </div>
 
         <!-- Ciclos visuais -->
@@ -428,7 +435,7 @@ body.focus-mode nav{border-bottom-color:#a78bfa44!important}
         <!-- Meta diária -->
         <div style="margin-top:16px">
           <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px">
-            <span>Meta diária</span>
+            <span id="daily-goal-label">Meta diária</span>
             <span id="daily-progress-label">0 / 8 sessões</span>
           </div>
           <div class="progress-bar-wrap">
@@ -439,19 +446,19 @@ body.focus-mode nav{border-bottom-color:#a78bfa44!important}
 
       <!-- Estatísticas -->
       <div class="panel" style="margin-top:16px">
-        <div class="panel-title">📊 Estatísticas</div>
+        <div class="panel-title">📊 <span id="stats-title">Estatísticas</span></div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center">
           <div style="background:var(--surface2);border-radius:10px;padding:12px">
             <div style="font-size:22px;font-weight:700;color:#a78bfa" id="stat-today">0</div>
-            <div style="font-size:10px;color:var(--muted)">Hoje</div>
+            <div style="font-size:10px;color:var(--muted)" id="stat-today-label">Hoje</div>
           </div>
           <div style="background:var(--surface2);border-radius:10px;padding:12px">
             <div style="font-size:22px;font-weight:700;color:var(--accent)" id="stat-week">0</div>
-            <div style="font-size:10px;color:var(--muted)">Esta semana</div>
+            <div style="font-size:10px;color:var(--muted)" id="stat-week-label">Esta semana</div>
           </div>
           <div style="background:var(--surface2);border-radius:10px;padding:12px">
             <div style="font-size:22px;font-weight:700;color:var(--accent2)" id="stat-total">0</div>
-            <div style="font-size:10px;color:var(--muted)">Total</div>
+            <div style="font-size:10px;color:var(--muted)" id="stat-total-label">Total</div>
           </div>
         </div>
       </div>
@@ -461,21 +468,21 @@ body.focus-mode nav{border-bottom-color:#a78bfa44!important}
     <div>
       <!-- Bloco de notas da sessão -->
       <div class="panel">
-        <div class="panel-title">📝 Sessão Actual</div>
-        <input type="text" id="session-goal" placeholder="O que pretendes concluir nesta sessão?" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:Sora,sans-serif;font-size:13px;margin-bottom:8px">
-        <textarea id="session-notes" placeholder="Notas rápidas, ideias, distrações para rever depois..." rows="4" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:Sora,sans-serif;font-size:12px;resize:none"></textarea>
+        <div class="panel-title">📝 <span id="session-title">Sessão Actual</span></div>
+        <input type="text" id="session-goal" data-i18n-placeholder="session_goal_ph" placeholder="O que pretendes concluir nesta sessão?" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:Sora,sans-serif;font-size:13px;margin-bottom:8px">
+        <textarea id="session-notes" data-i18n-placeholder="session_notes_ph" placeholder="Notas rápidas, ideias, distrações para rever depois..." rows="4" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:Sora,sans-serif;font-size:12px;resize:none"></textarea>
       </div>
 
       <!-- Lista de tarefas -->
       <div class="panel" style="margin-top:16px">
-        <div class="panel-title">✅ Tarefas do Dia</div>
+        <div class="panel-title">✅ <span id="tasks-title">Tarefas do Dia</span></div>
         <div style="display:flex;gap:8px;margin-bottom:12px">
-          <input type="text" id="task-input" placeholder="Nova tarefa..." onkeydown="if(event.key==='Enter')addTask()" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:Sora,sans-serif;font-size:13px">
+          <input type="text" id="task-input" data-i18n-placeholder="task_ph" placeholder="Nova tarefa..." onkeydown="if(event.key==='Enter')addTask()" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:Sora,sans-serif;font-size:13px">
           <select id="task-tag-select" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px;color:var(--text);font-family:Sora,sans-serif;font-size:12px">
-            <option value="work">💼 Trabalho</option>
-            <option value="study">📚 Estudo</option>
-            <option value="personal">👤 Pessoal</option>
-            <option value="meeting">🌍 Reunião</option>
+            <option value="work">💼 <span class="tl-work">Trabalho</span></option>
+            <option value="study">📚 <span class="tl-study">Estudo</span></option>
+            <option value="personal">👤 <span class="tl-personal">Pessoal</span></option>
+            <option value="meeting">🌍 <span class="tl-meeting">Reunião</span></option>
           </select>
           <button class="btn primary" onclick="addTask()" style="background:#a78bfa;border-color:#a78bfa;padding:8px 14px">+</button>
         </div>
@@ -485,12 +492,37 @@ body.focus-mode nav{border-bottom-color:#a78bfa44!important}
 
       <!-- Fusos activos durante sessão -->
       <div class="panel" style="margin-top:16px">
-        <div class="panel-title">🌍 Países em Horário Laboral Agora</div>
+        <div class="panel-title">🌍 <span id="working-title">Países em Horário Laboral Agora</span></div>
         <div id="working-hours-list" style="font-size:12px;color:var(--text)"></div>
       </div>
     </div>
   </div>
 </div>
+</div>
+
+<!-- ZEN MODE OVERLAY -->
+<div id="zen-overlay" style="display:none;position:fixed;inset:0;background:rgba(5,5,10,.92);z-index:500;flex-direction:column;align-items:center;justify-content:center;gap:20px">
+  <div style="font-size:13px;color:#a78bfa;letter-spacing:3px;text-transform:uppercase" id="zen-city-text">O seu tempo de foco</div>
+  <div class="pomo-ring" style="width:260px;height:260px">
+    <svg width="260" height="260" viewBox="0 0 260 260">
+      <circle cx="130" cy="130" r="115" fill="none" stroke="#1a1a2e" stroke-width="10"/>
+      <circle id="zen-ring" cx="130" cy="130" r="115" fill="none" stroke="#a78bfa" stroke-width="10" stroke-linecap="round" stroke-dasharray="723" stroke-dashoffset="0" style="transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset .5s"/>
+    </svg>
+    <div class="pomo-time">
+      <div style="font-family:'Space Mono',monospace;font-size:52px;font-weight:700;color:#fff" id="zen-display">25:00</div>
+      <div style="font-size:12px;color:#a78bfa;letter-spacing:2px" id="zen-state">FOCO</div>
+    </div>
+  </div>
+  <button onclick="toggleZenMode()" style="background:transparent;border:1px solid #a78bfa44;border-radius:20px;padding:8px 24px;color:#a78bfa;font-family:Sora,sans-serif;font-size:13px;cursor:pointer" id="zen-exit-btn">✕ Sair do Zen Mode</button>
+</div>
+
+<!-- TASK COMPLETE TOAST -->
+<div id="task-toast" style="display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#0f2a1a,#0a1a0f);border:1px solid #00e5a0;border-radius:12px;padding:12px 20px;z-index:9999;display:none;align-items:center;gap:10px;min-width:280px">
+  <span style="font-size:20px">✅</span>
+  <div>
+    <div style="font-size:13px;font-weight:600;color:#00e5a0" id="task-toast-title">Tarefa concluída!</div>
+    <div style="font-size:11px;color:var(--muted)" id="task-toast-sub">Continua assim 💪</div>
+  </div>
 </div>
 
 <!-- ═══ AD SLOT 3 — FOOTER BANNER 728x90 ═══ -->
@@ -522,7 +554,21 @@ const TRANSLATIONS = {
     alert_done:'Contagem regressiva concluída!',
     months:['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
     dows:['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],
-    locale:'pt-BR'
+    locale:'pt-BR',
+    focus_streak:'DIAS DE STREAK', focus_sessions_today:'sessões hoje',
+    focus_cycle:'Ciclo', focus_goal:'Meta diária', focus_stats:'Estatísticas',
+    focus_today:'Hoje', focus_week:'Esta semana', focus_total:'Total',
+    focus_session_title:'Sessão Actual', focus_tasks_title:'Tarefas do Dia',
+    focus_working:'Países em Horário Laboral Agora',
+    focus_city_prefix:'O seu tempo de foco em',
+    focus_mode_work:'Trabalho', focus_mode_study:'Estudo',
+    focus_mode_meeting:'Reunião', focus_mode_deep:'Deep Work',
+    focus_start:'▶ Iniciar', focus_pause:'⏸ Pausar', focus_resume:'▶ Continuar',
+    focus_reset:'↺ Reset', focus_skip:'⏭ Skip', focus_zen:'🧘 Zen',
+    task_ph:'Nova tarefa...', session_goal_ph:'O que pretendes concluir nesta sessão?',
+    session_notes_ph:'Notas rápidas, ideias, distrações para rever depois...',
+    task_done_msg:'Tarefa concluída! 🎉', task_all_done:'Todas as tarefas concluídas! 🏆',
+    sessions_label:'sessões'
   },
   en: {
     nav_clock:'Clock', nav_zones:'Time Zones', nav_tools:'Tools', nav_cal:'Calendar',
@@ -538,7 +584,21 @@ const TRANSLATIONS = {
     alert_done:'Countdown finished!',
     months:['January','February','March','April','May','June','July','August','September','October','November','December'],
     dows:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
-    locale:'en-US'
+    locale:'en-US',
+    focus_streak:'DAY STREAK', focus_sessions_today:'sessions today',
+    focus_cycle:'Cycle', focus_goal:'Daily goal', focus_stats:'Statistics',
+    focus_today:'Today', focus_week:'This week', focus_total:'Total',
+    focus_session_title:'Current Session', focus_tasks_title:'Today\'s Tasks',
+    focus_working:'Countries Currently Working',
+    focus_city_prefix:'Your focus time in',
+    focus_mode_work:'Work', focus_mode_study:'Study',
+    focus_mode_meeting:'Meeting', focus_mode_deep:'Deep Work',
+    focus_start:'▶ Start', focus_pause:'⏸ Pause', focus_resume:'▶ Resume',
+    focus_reset:'↺ Reset', focus_skip:'⏭ Skip', focus_zen:'🧘 Zen',
+    task_ph:'New task...', session_goal_ph:'What do you want to achieve this session?',
+    session_notes_ph:'Quick notes, ideas, distractions to review later...',
+    task_done_msg:'Task completed! 🎉', task_all_done:'All tasks done! 🏆',
+    sessions_label:'sessions'
   },
   fr: {
     nav_clock:'Heure', nav_zones:'Fuseaux', nav_tools:'Outils', nav_cal:'Calendrier',
@@ -554,7 +614,21 @@ const TRANSLATIONS = {
     alert_done:'Compte à rebours terminé !',
     months:['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'],
     dows:['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],
-    locale:'fr-FR'
+    locale:'fr-FR',
+    focus_streak:'JOURS DE SÉRIE', focus_sessions_today:'sessions aujourd\'hui',
+    focus_cycle:'Cycle', focus_goal:'Objectif quotidien', focus_stats:'Statistiques',
+    focus_today:'Aujourd\'hui', focus_week:'Cette semaine', focus_total:'Total',
+    focus_session_title:'Session Actuelle', focus_tasks_title:'Tâches du Jour',
+    focus_working:'Pays en Horaire de Travail',
+    focus_city_prefix:'Votre temps de focus à',
+    focus_mode_work:'Travail', focus_mode_study:'Étude',
+    focus_mode_meeting:'Réunion', focus_mode_deep:'Travail Profond',
+    focus_start:'▶ Démarrer', focus_pause:'⏸ Pause', focus_resume:'▶ Reprendre',
+    focus_reset:'↺ Reset', focus_skip:'⏭ Passer', focus_zen:'🧘 Zen',
+    task_ph:'Nouvelle tâche...', session_goal_ph:'Que voulez-vous accomplir cette session?',
+    session_notes_ph:'Notes rapides, idées, distractions à revoir...',
+    task_done_msg:'Tâche terminée! 🎉', task_all_done:'Toutes les tâches terminées! 🏆',
+    sessions_label:'sessions'
   },
   es: {
     nav_clock:'Hora', nav_zones:'Zonas', nav_tools:'Herramientas', nav_cal:'Calendario',
@@ -570,7 +644,21 @@ const TRANSLATIONS = {
     alert_done:'¡Cuenta regresiva terminada!',
     months:['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
     dows:['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'],
-    locale:'es-ES'
+    locale:'es-ES',
+    focus_streak:'DÍAS DE RACHA', focus_sessions_today:'sesiones hoy',
+    focus_cycle:'Ciclo', focus_goal:'Meta diaria', focus_stats:'Estadísticas',
+    focus_today:'Hoy', focus_week:'Esta semana', focus_total:'Total',
+    focus_session_title:'Sesión Actual', focus_tasks_title:'Tareas del Día',
+    focus_working:'Países en Horario Laboral',
+    focus_city_prefix:'Tu tiempo de enfoque en',
+    focus_mode_work:'Trabajo', focus_mode_study:'Estudio',
+    focus_mode_meeting:'Reunión', focus_mode_deep:'Trabajo Profundo',
+    focus_start:'▶ Iniciar', focus_pause:'⏸ Pausar', focus_resume:'▶ Continuar',
+    focus_reset:'↺ Reset', focus_skip:'⏭ Saltar', focus_zen:'🧘 Zen',
+    task_ph:'Nueva tarea...', session_goal_ph:'¿Qué quieres lograr en esta sesión?',
+    session_notes_ph:'Notas rápidas, ideas, distracciones para revisar...',
+    task_done_msg:'¡Tarea completada! 🎉', task_all_done:'¡Todas las tareas completadas! 🏆',
+    sessions_label:'sesiones'
   },
   ar: {
     nav_clock:'الساعة', nav_zones:'المناطق', nav_tools:'أدوات', nav_cal:'التقويم',
@@ -586,7 +674,21 @@ const TRANSLATIONS = {
     alert_done:'انتهى العد التنازلي!',
     months:['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],
     dows:['أحد','إثن','ثلا','أرب','خمس','جمع','سبت'],
-    locale:'ar-SA'
+    locale:'ar-SA',
+    focus_streak:'أيام متتالية', focus_sessions_today:'جلسات اليوم',
+    focus_cycle:'دورة', focus_goal:'هدف يومي', focus_stats:'إحصائيات',
+    focus_today:'اليوم', focus_week:'هذا الأسبوع', focus_total:'الإجمالي',
+    focus_session_title:'الجلسة الحالية', focus_tasks_title:'مهام اليوم',
+    focus_working:'الدول في وقت العمل الآن',
+    focus_city_prefix:'وقت تركيزك في',
+    focus_mode_work:'عمل', focus_mode_study:'دراسة',
+    focus_mode_meeting:'اجتماع', focus_mode_deep:'عمل عميق',
+    focus_start:'▶ ابدأ', focus_pause:'⏸ توقف', focus_resume:'▶ استمر',
+    focus_reset:'↺ إعادة', focus_skip:'⏭ تخطي', focus_zen:'🧘 زن',
+    task_ph:'مهمة جديدة...', session_goal_ph:'ماذا تريد أن تنجز في هذه الجلسة؟',
+    session_notes_ph:'ملاحظات سريعة، أفكار، مشتتات للمراجعة لاحقاً...',
+    task_done_msg:'تمت المهمة! 🎉', task_all_done:'جميع المهام مكتملة! 🏆',
+    sessions_label:'جلسات'
   },
   zh: {
     nav_clock:'时钟', nav_zones:'时区', nav_tools:'工具', nav_cal:'日历',
@@ -602,7 +704,21 @@ const TRANSLATIONS = {
     alert_done:'倒计时结束！',
     months:['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
     dows:['日','一','二','三','四','五','六'],
-    locale:'zh-CN'
+    locale:'zh-CN',
+    focus_streak:'连续天数', focus_sessions_today:'今日专注',
+    focus_cycle:'周期', focus_goal:'每日目标', focus_stats:'统计',
+    focus_today:'今天', focus_week:'本周', focus_total:'总计',
+    focus_session_title:'当前会话', focus_tasks_title:'今日任务',
+    focus_working:'当前工作时间的国家',
+    focus_city_prefix:'您在以下城市的专注时间',
+    focus_mode_work:'工作', focus_mode_study:'学习',
+    focus_mode_meeting:'会议', focus_mode_deep:'深度工作',
+    focus_start:'▶ 开始', focus_pause:'⏸ 暂停', focus_resume:'▶ 继续',
+    focus_reset:'↺ 重置', focus_skip:'⏭ 跳过', focus_zen:'🧘 禅',
+    task_ph:'新任务...', session_goal_ph:'这次会话你想完成什么？',
+    session_notes_ph:'快速笔记、想法、稍后查看的干扰...',
+    task_done_msg:'任务完成！🎉', task_all_done:'所有任务完成！🏆',
+    sessions_label:'次'
   },
   de: {
     nav_clock:'Uhr', nav_zones:'Zeitzonen', nav_tools:'Werkzeuge', nav_cal:'Kalender',
@@ -618,7 +734,21 @@ const TRANSLATIONS = {
     alert_done:'Countdown beendet!',
     months:['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],
     dows:['So','Mo','Di','Mi','Do','Fr','Sa'],
-    locale:'de-DE'
+    locale:'de-DE',
+    focus_streak:'TAGE IN FOLGE', focus_sessions_today:'Sitzungen heute',
+    focus_cycle:'Zyklus', focus_goal:'Tagesziel', focus_stats:'Statistiken',
+    focus_today:'Heute', focus_week:'Diese Woche', focus_total:'Gesamt',
+    focus_session_title:'Aktuelle Sitzung', focus_tasks_title:'Aufgaben des Tages',
+    focus_working:'Länder mit Arbeitszeit',
+    focus_city_prefix:'Ihre Fokuszeit in',
+    focus_mode_work:'Arbeit', focus_mode_study:'Lernen',
+    focus_mode_meeting:'Meeting', focus_mode_deep:'Tiefe Arbeit',
+    focus_start:'▶ Start', focus_pause:'⏸ Pause', focus_resume:'▶ Weiter',
+    focus_reset:'↺ Reset', focus_skip:'⏭ Überspringen', focus_zen:'🧘 Zen',
+    task_ph:'Neue Aufgabe...', session_goal_ph:'Was möchten Sie in dieser Sitzung erreichen?',
+    session_notes_ph:'Schnelle Notizen, Ideen, Ablenkungen zur späteren Überprüfung...',
+    task_done_msg:'Aufgabe erledigt! 🎉', task_all_done:'Alle Aufgaben erledigt! 🏆',
+    sessions_label:'Sitzungen'
   },
   it: {
     nav_clock:'Orologio', nav_zones:'Fusi', nav_tools:'Strumenti', nav_cal:'Calendario',
@@ -634,7 +764,21 @@ const TRANSLATIONS = {
     alert_done:'Conto alla rovescia terminato!',
     months:['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'],
     dows:['Dom','Lun','Mar','Mer','Gio','Ven','Sab'],
-    locale:'it-IT'
+    locale:'it-IT',
+    focus_streak:'GIORNI DI FILA', focus_sessions_today:'sessioni oggi',
+    focus_cycle:'Ciclo', focus_goal:'Obiettivo giornaliero', focus_stats:'Statistiche',
+    focus_today:'Oggi', focus_week:'Questa settimana', focus_total:'Totale',
+    focus_session_title:'Sessione Attuale', focus_tasks_title:'Attività del Giorno',
+    focus_working:'Paesi in Orario Lavorativo',
+    focus_city_prefix:'Il tuo tempo di focus a',
+    focus_mode_work:'Lavoro', focus_mode_study:'Studio',
+    focus_mode_meeting:'Riunione', focus_mode_deep:'Lavoro Profondo',
+    focus_start:'▶ Avvia', focus_pause:'⏸ Pausa', focus_resume:'▶ Riprendi',
+    focus_reset:'↺ Reset', focus_skip:'⏭ Salta', focus_zen:'🧘 Zen',
+    task_ph:'Nuova attività...', session_goal_ph:'Cosa vuoi realizzare in questa sessione?',
+    session_notes_ph:'Note rapide, idee, distrazioni da rivedere...',
+    task_done_msg:'Attività completata! 🎉', task_all_done:'Tutte le attività completate! 🏆',
+    sessions_label:'sessioni'
   },
   ja: {
     nav_clock:'時計', nav_zones:'タイムゾーン', nav_tools:'ツール', nav_cal:'カレンダー',
@@ -650,7 +794,21 @@ const TRANSLATIONS = {
     alert_done:'カウントダウン終了！',
     months:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
     dows:['日','月','火','水','木','金','土'],
-    locale:'ja-JP'
+    locale:'ja-JP',
+    focus_streak:'連続日数', focus_sessions_today:'本日のセッション',
+    focus_cycle:'サイクル', focus_goal:'1日の目標', focus_stats:'統計',
+    focus_today:'今日', focus_week:'今週', focus_total:'合計',
+    focus_session_title:'現在のセッション', focus_tasks_title:'今日のタスク',
+    focus_working:'現在営業時間中の国',
+    focus_city_prefix:'あなたの集中時間：',
+    focus_mode_work:'仕事', focus_mode_study:'学習',
+    focus_mode_meeting:'会議', focus_mode_deep:'深い作業',
+    focus_start:'▶ 開始', focus_pause:'⏸ 一時停止', focus_resume:'▶ 再開',
+    focus_reset:'↺ リセット', focus_skip:'⏭ スキップ', focus_zen:'🧘 禅',
+    task_ph:'新しいタスク...', session_goal_ph:'このセッションで何を達成したいですか？',
+    session_notes_ph:'メモ、アイデア、後で確認する気晴らし...',
+    task_done_msg:'タスク完了！🎉', task_all_done:'全タスク完了！🏆',
+    sessions_label:'セッション'
   },
   ru: {
     nav_clock:'Часы', nav_zones:'Часовые пояса', nav_tools:'Инструменты', nav_cal:'Календарь',
@@ -666,7 +824,21 @@ const TRANSLATIONS = {
     alert_done:'Обратный отсчёт завершён!',
     months:['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
     dows:['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
-    locale:'ru-RU'
+    locale:'ru-RU',
+    focus_streak:'ДНЕЙ ПОДРЯД', focus_sessions_today:'сессий сегодня',
+    focus_cycle:'Цикл', focus_goal:'Дневная цель', focus_stats:'Статистика',
+    focus_today:'Сегодня', focus_week:'На этой неделе', focus_total:'Всего',
+    focus_session_title:'Текущая Сессия', focus_tasks_title:'Задачи Дня',
+    focus_working:'Страны в Рабочее Время',
+    focus_city_prefix:'Ваше время фокуса в',
+    focus_mode_work:'Работа', focus_mode_study:'Учёба',
+    focus_mode_meeting:'Встреча', focus_mode_deep:'Глубокая Работа',
+    focus_start:'▶ Старт', focus_pause:'⏸ Пауза', focus_resume:'▶ Продолжить',
+    focus_reset:'↺ Сброс', focus_skip:'⏭ Пропустить', focus_zen:'🧘 Дзен',
+    task_ph:'Новая задача...', session_goal_ph:'Что вы хотите достичь в этой сессии?',
+    session_notes_ph:'Быстрые заметки, идеи, отвлечения для последующего просмотра...',
+    task_done_msg:'Задача выполнена! 🎉', task_all_done:'Все задачи выполнены! 🏆',
+    sessions_label:'сессий'
   }
 };
 
@@ -705,6 +877,29 @@ function setLang(code){
   document.getElementById('featured-label').textContent = T.featured;
   // user location
   document.getElementById('user-location').textContent = T.detecting;
+  // Focus Mode translations
+  if(T.focus_streak){
+    const sl = document.getElementById('streak-label'); if(sl) sl.textContent = T.focus_streak;
+    const st = document.getElementById('sessions-today'); if(st) st.textContent = pomoSessionsToday+' '+T.focus_sessions_today;
+    const cl = document.getElementById('cycle-label'); if(cl) cl.textContent = T.focus_cycle;
+    const gl = document.getElementById('daily-goal-label'); if(gl) gl.textContent = T.focus_goal;
+    const stl = document.getElementById('stats-title'); if(stl) stl.textContent = T.focus_stats;
+    const tl = document.getElementById('stat-today-label'); if(tl) tl.textContent = T.focus_today;
+    const wl = document.getElementById('stat-week-label'); if(wl) wl.textContent = T.focus_week;
+    const ol = document.getElementById('stat-total-label'); if(ol) ol.textContent = T.focus_total;
+    const set = document.getElementById('session-title'); if(set) set.textContent = T.focus_session_title;
+    const tst = document.getElementById('tasks-title'); if(tst) tst.textContent = T.focus_tasks_title;
+    const sg = document.getElementById('session-goal'); if(sg) sg.placeholder = T.session_goal_ph;
+    const sn = document.getElementById('session-notes'); if(sn) sn.placeholder = T.session_notes_ph;
+    const ti = document.getElementById('task-input'); if(ti) ti.placeholder = T.task_ph;
+    const pb = document.getElementById('pomo-btn'); if(pb && pomoState==='idle') pb.querySelector('#pomo-btn-label') && (document.getElementById('pomo-btn-label').textContent = T.focus_start.replace('▶ ',''));
+    const mw = document.querySelector('.pm-work'); if(mw) mw.textContent = T.focus_mode_work;
+    const ms = document.querySelector('.pm-study'); if(ms) ms.textContent = T.focus_mode_study;
+    const mm = document.querySelector('.pm-meeting'); if(mm) mm.textContent = T.focus_mode_meeting;
+    const md = document.querySelector('.pm-deep'); if(md) md.textContent = T.focus_mode_deep;
+    // Update city line
+    updateFocusCityLine();
+  }
   // calendar
   renderCal();
   // update main clock date format immediately
@@ -1260,14 +1455,17 @@ function pomoSave(){
 }
 
 function pomoUpdateStats(){
+  const T = TRANSLATIONS[currentLang] || TRANSLATIONS['en'];
   document.getElementById('stat-today').textContent = pomoSessionsToday;
   document.getElementById('stat-week').textContent = pomoSessionsWeek;
   document.getElementById('stat-total').textContent = pomoSessionsTotal;
   document.getElementById('streak-count').textContent = pomoStreak;
-  document.getElementById('sessions-today').textContent = pomoSessionsToday + ' sessões hoje';
+  const st = document.getElementById('sessions-today');
+  if(st) st.textContent = pomoSessionsToday + ' ' + (T.focus_sessions_today || 'sessions today');
   const pct = Math.min((pomoSessionsToday / 8) * 100, 100);
   document.getElementById('daily-progress-bar').style.width = pct + '%';
-  document.getElementById('daily-progress-label').textContent = pomoSessionsToday + ' / 8 sessões';
+  const dl = document.getElementById('daily-progress-label');
+  if(dl) dl.textContent = pomoSessionsToday + ' / 8 ' + (T.sessions_label || 'sessions');
 }
 
 function setPomoMode(mode, mins, btn){
@@ -1406,6 +1604,56 @@ function renderTasks(){
 }
 
 // ─── WORKING HOURS ───────────────────────────────────────────────────────────
+function updateFocusCityLine(){
+  const T = TRANSLATIONS[currentLang];
+  const el = document.getElementById('focus-city-text');
+  if(!el) return;
+  try{
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const city = tz.split('/').pop().replace(/_/g,' ');
+    el.textContent = (T.focus_city_prefix || 'Your focus time in') + ' ' + city;
+  }catch(e){ el.textContent = T.focus_city_prefix || 'Your focus time'; }
+}
+
+function toggleTask(id){
+  const t = tasks.find(t => t.id === id);
+  if(!t) return;
+  t.done = !t.done;
+  renderTasks();
+  pomoSave();
+  const T = TRANSLATIONS[currentLang];
+  if(t.done){
+    // Play a soft bell tone
+    playTone('bell', 1);
+    // Show mini toast
+    showTaskToast(T.task_done_msg || 'Task completed! 🎉');
+    // Check if all done
+    const today = new Date().toDateString();
+    const todayTasks = tasks.filter(t => t.date === today);
+    const allDone = todayTasks.length > 0 && todayTasks.every(t => t.done);
+    if(allDone){
+      setTimeout(()=> showTaskToast(T.task_all_done || 'All tasks done! 🏆', true), 1200);
+    }
+  }
+}
+
+function showTaskToast(msg, isChampion=false){
+  const existing = document.getElementById('task-toast-msg');
+  if(existing) existing.remove();
+  const div = document.createElement('div');
+  div.id = 'task-toast-msg';
+  div.style.cssText = `position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+    background:${isChampion ? 'linear-gradient(135deg,#a78bfa,#00e5a0)' : 'var(--surface)'};
+    border:1px solid ${isChampion ? 'transparent' : '#a78bfa'};
+    color:${isChampion ? '#000' : 'var(--text)'};
+    border-radius:20px;padding:10px 20px;font-size:14px;font-weight:600;
+    z-index:9999;font-family:Sora,sans-serif;
+    animation:slideUp .3s ease;box-shadow:0 4px 20px rgba(0,0,0,.3)`;
+  div.textContent = msg;
+  document.body.appendChild(div);
+  setTimeout(()=>{ if(div.parentNode) div.remove(); }, 2500);
+}
+
 function updateWorkingHours(){
   const zones = [
     {city:'Lisboa',tz:'Europe/Lisbon'},{city:'Londres',tz:'Europe/London'},
