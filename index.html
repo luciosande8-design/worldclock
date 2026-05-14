@@ -959,6 +959,10 @@ function setLang(code){
     const langQuotes = QUOTES[currentLang] || QUOTES['en'];
     const qEl = document.getElementById('daily-quote');
     if(qEl) qEl.textContent = langQuotes[Math.floor(Math.random()*langQuotes.length)];
+    // Update dynamic content that depends on language
+    pomoUpdateStats();
+    renderTasks();
+    updateWorkingHours();
   }
   // calendar
   renderCal();
@@ -1376,6 +1380,11 @@ function toggleTheme(){
   renderCal();
   // Apply all translations including Focus Mode
   setLang(detected);
+  // Now apply focus mode dynamic content that needs lang + data
+  pomoUpdateStats();
+  renderTasks();
+  updateWorkingHours();
+  // Main clock and cities
   updateMainClock();
   updateAllCities();
 })();
@@ -1503,11 +1512,7 @@ function pomoLoad(){
       if(p.date !== today){ pomoSessionsToday = 0; }
     }
   }catch(e){}
-  pomoUpdateStats();
-  renderTasks();
-  const langQuotes = QUOTES[currentLang] || QUOTES['en'];
-  document.getElementById('daily-quote').textContent = langQuotes[Math.floor(Math.random()*langQuotes.length)];
-  updateWorkingHours();
+  // Stats and quotes will be applied by setLang after lang is detected
 }
 
 function pomoSave(){
@@ -1542,16 +1547,17 @@ function setPomoMode(mode, mins, btn){
 }
 
 function pomoToggle(){
+  const T = TRANSLATIONS[currentLang] || TRANSLATIONS['en'];
   const btn = document.getElementById('pomo-btn');
   if(pomoState === 'idle' || pomoState === 'paused'){
     if(pomoState === 'idle'){ pomoRemaining = pomoMinutes * 60; pomoTotal = pomoRemaining; }
     pomoState = 'running';
-    btn.textContent = '⏸ Pausar';
+    btn.textContent = T.focus_pause || '⏸ Pause';
     document.body.classList.add('focus-mode');
     pomoInterval = setInterval(pomoTick, 1000);
   } else if(pomoState === 'running'){
     pomoState = 'paused';
-    btn.textContent = '▶ Continuar';
+    btn.textContent = T.focus_resume || '▶ Resume';
     clearInterval(pomoInterval);
   }
 }
@@ -1654,19 +1660,29 @@ function deleteTask(id){
 }
 
 function renderTasks(){
+  const T = TRANSLATIONS[currentLang] || TRANSLATIONS['en'];
   const list = document.getElementById('task-list');
+  if(!list) return;
   const today = new Date().toDateString();
   const todayTasks = tasks.filter(t => t.date === today);
+  // Dynamic tag labels based on current language
+  const dynTags = {
+    work: '💼 ' + (T.focus_mode_work || 'Work'),
+    study: '📚 ' + (T.focus_mode_study || 'Study'),
+    personal: '👤 ' + (currentLang==='pt'?'Pessoal':currentLang==='fr'?'Personnel':currentLang==='es'?'Personal':currentLang==='de'?'Persönlich':currentLang==='it'?'Personale':currentLang==='ar'?'شخصي':currentLang==='zh'?'个人':currentLang==='ja'?'個人':currentLang==='ru'?'Личное':'Personal'),
+    meeting: '🌍 ' + (T.focus_mode_meeting || 'Meeting')
+  };
   list.innerHTML = todayTasks.map(t => `
     <div class="task-item ${t.done?'done':''}">
       <div class="task-check ${t.done?'checked':''}" onclick="toggleTask(${t.id})">${t.done?'✓':''}</div>
       <span class="task-text">${t.text}</span>
-      <span class="task-tag ${TAG_CLASSES[t.tag]}">${TAG_LABELS[t.tag]}</span>
+      <span class="task-tag ${TAG_CLASSES[t.tag]}">${dynTags[t.tag]||t.tag}</span>
       <button onclick="deleteTask(${t.id})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px">✕</button>
     </div>
   `).join('');
   const done = todayTasks.filter(t => t.done).length;
-  document.getElementById('task-summary').textContent = todayTasks.length + ' tarefas · ' + done + ' concluídas';
+  const sumEl = document.getElementById('task-summary');
+  if(sumEl) sumEl.textContent = todayTasks.length + ' ' + (currentLang==='pt'?'tarefas':currentLang==='fr'?'tâches':currentLang==='es'?'tareas':currentLang==='de'?'Aufgaben':currentLang==='it'?'attività':currentLang==='ar'?'مهام':currentLang==='zh'?'任务':currentLang==='ja'?'タスク':currentLang==='ru'?'задач':'tasks') + ' · ' + done + ' ' + (currentLang==='pt'?'concluídas':currentLang==='fr'?'terminées':currentLang==='es'?'completadas':currentLang==='de'?'erledigt':currentLang==='it'?'completate':currentLang==='ar'?'مكتملة':currentLang==='zh'?'完成':currentLang==='ja'?'完了':currentLang==='ru'?'выполнено':'done');
 }
 
 // ─── WORKING HOURS ───────────────────────────────────────────────────────────
@@ -1721,12 +1737,15 @@ function showTaskToast(msg, isChampion=false){
 }
 
 function updateWorkingHours(){
+  const workingText = currentLang==='pt'?'Em trabalho':currentLang==='fr'?'En travail':currentLang==='es'?'Trabajando':currentLang==='de'?'In Arbeit':currentLang==='it'?'Al lavoro':currentLang==='ar'?'في العمل':currentLang==='zh'?'工作中':currentLang==='ja'?'勤務中':currentLang==='ru'?'На работе':'Working';
+  const noWorkText = currentLang==='pt'?'Nenhuma cidade em horário laboral agora.':currentLang==='fr'?'Aucune ville en horaire de travail.':currentLang==='es'?'Ninguna ciudad en horario laboral.':currentLang==='de'?'Keine Stadt in Arbeitszeit.':currentLang==='it'?'Nessuna città in orario lavorativo.':currentLang==='ar'?'لا توجد مدينة في وقت العمل الآن.':currentLang==='zh'?'目前没有城市在工作时间。':currentLang==='ja'?'現在勤務時間中の都市はありません。':currentLang==='ru'?'Нет городов в рабочее время.':'No cities currently in working hours.';
   const zones = [
-    {city:'Lisboa',tz:'Europe/Lisbon'},{city:'Londres',tz:'Europe/London'},
-    {city:'Paris',tz:'Europe/Paris'},{city:'Nova Iorque',tz:'America/New_York'},
-    {city:'Dubai',tz:'Asia/Dubai'},{city:'Tóquio',tz:'Asia/Tokyo'},
+    {city:'Lisbon',tz:'Europe/Lisbon'},{city:'London',tz:'Europe/London'},
+    {city:'Paris',tz:'Europe/Paris'},{city:'New York',tz:'America/New_York'},
+    {city:'Dubai',tz:'Asia/Dubai'},{city:'Tokyo',tz:'Asia/Tokyo'},
     {city:'São Paulo',tz:'America/Sao_Paulo'},{city:'Nairobi',tz:'Africa/Nairobi'},
-    {city:'Singapura',tz:'Asia/Singapore'},{city:'Sydney',tz:'Australia/Sydney'},
+    {city:'Singapore',tz:'Asia/Singapore'},{city:'Sydney',tz:'Australia/Sydney'},
+    {city:'Maputo',tz:'Africa/Maputo'},{city:'Lagos',tz:'Africa/Lagos'},
   ];
   const working = zones.filter(z => {
     try{
@@ -1735,12 +1754,11 @@ function updateWorkingHours(){
     }catch(e){ return false; }
   });
   const el = document.getElementById('working-hours-list');
-  if(el){
-    if(working.length === 0){
-      el.innerHTML = '<div style="color:var(--muted);font-size:12px">Nenhuma cidade principal em horário laboral agora.</div>';
-    } else {
-      el.innerHTML = working.map(z => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>${z.city}</span><span style="color:var(--accent);font-size:11px">✅ Em trabalho</span></div>`).join('');
-    }
+  if(!el) return;
+  if(working.length === 0){
+    el.innerHTML = `<div style="color:var(--muted);font-size:12px">${noWorkText}</div>`;
+  } else {
+    el.innerHTML = working.map(z => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>${z.city}</span><span style="color:var(--accent);font-size:11px">✅ ${workingText}</span></div>`).join('');
   }
 }
 setInterval(updateWorkingHours, 60000);
