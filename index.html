@@ -375,7 +375,7 @@ body.focus-mode nav{border-bottom-color:#a78bfa44!important}
       <div class="streak-flame">🔥</div>
       <div>
         <div style="font-size:24px;font-weight:700;color:#a78bfa" id="streak-count">0</div>
-        <div style="font-size:11px;color:var(--muted);letter-spacing:1px" id="streak-label">DIAS DE STREAK</div>
+        <div style="font-size:11px;color:var(--muted);letter-spacing:1px" id="streak-label">STREAK</div>
         <div style="font-size:11px;color:var(--muted)" id="sessions-today">0 sessões hoje</div>
       </div>
     </div>
@@ -392,9 +392,9 @@ body.focus-mode nav{border-bottom-color:#a78bfa44!important}
       <div class="panel">
         <!-- Modos -->
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
-          <button class="pomo-mode-btn active" onclick="setPomoMode('work',25,this)" id="mode-work">💼 <span class="pm-work">Trabalho</span></button>
-          <button class="pomo-mode-btn" onclick="setPomoMode('study',25,this)" id="mode-study">📚 <span class="pm-study">Estudo</span></button>
-          <button class="pomo-mode-btn" onclick="setPomoMode('meeting',50,this)" id="mode-meeting">🌍 <span class="pm-meeting">Reunião</span></button>
+          <button class="pomo-mode-btn active" onclick="setPomoMode('work',25,this)" id="mode-work">💼 <span class="pm-work">Work</span></button>
+          <button class="pomo-mode-btn" onclick="setPomoMode('study',25,this)" id="mode-study">📚 <span class="pm-study">Study</span></button>
+          <button class="pomo-mode-btn" onclick="setPomoMode('meeting',50,this)" id="mode-meeting">🌍 <span class="pm-meeting">Meeting</span></button>
           <button class="pomo-mode-btn" onclick="setPomoMode('deep',90,this)" id="mode-deep">🧠 <span class="pm-deep">Deep Work</span></button>
         </div>
 
@@ -406,8 +406,8 @@ body.focus-mode nav{border-bottom-color:#a78bfa44!important}
           </svg>
           <div class="pomo-time">
             <div class="t" id="pomo-display">25:00</div>
-            <div class="s" id="pomo-state-label">FOCO</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:4px"><span id="cycle-label">Ciclo</span> <span id="pomo-cycle">1</span>/4</div>
+            <div class="s" id="pomo-state-label">FOCUS</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px"><span id="cycle-label">Cycle</span> <span id="pomo-cycle">1</span>/4</div>
           </div>
         </div>
 
@@ -418,7 +418,7 @@ body.focus-mode nav{border-bottom-color:#a78bfa44!important}
 
         <!-- Zen Mode + Controlos -->
         <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap">
-          <button class="btn primary" id="pomo-btn" onclick="pomoToggle()" style="background:#a78bfa;border-color:#a78bfa;min-width:100px">▶ <span id="pomo-btn-label">Iniciar</span></button>
+          <button class="btn primary" id="pomo-btn" onclick="pomoToggle()" style="background:#a78bfa;border-color:#a78bfa;min-width:100px">▶ <span id="pomo-btn-label">Start</span></button>
           <button class="btn" onclick="pomoReset()" id="pomo-reset-btn">↺ Reset</button>
           <button class="btn" onclick="pomoSkip()" id="pomo-skip-btn">⏭ Skip</button>
           <button class="btn" onclick="toggleZenMode()" id="zen-btn" style="border-color:#a78bfa44;color:#a78bfa;font-size:11px">🧘 Zen</button>
@@ -435,8 +435,8 @@ body.focus-mode nav{border-bottom-color:#a78bfa44!important}
         <!-- Meta diária -->
         <div style="margin-top:16px">
           <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px">
-            <span id="daily-goal-label">Meta diária</span>
-            <span id="daily-progress-label">0 / 8 sessões</span>
+            <span id="daily-goal-label">Daily goal</span>
+            <span id="daily-progress-label">0 / 8 sessions</span>
           </div>
           <div class="progress-bar-wrap">
             <div class="progress-bar-fill" id="daily-progress-bar" style="width:0%"></div>
@@ -446,15 +446,15 @@ body.focus-mode nav{border-bottom-color:#a78bfa44!important}
 
       <!-- Estatísticas -->
       <div class="panel" style="margin-top:16px">
-        <div class="panel-title">📊 <span id="stats-title">Estatísticas</span></div>
+        <div class="panel-title">📊 <span id="stats-title">Statistics</span></div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center">
           <div style="background:var(--surface2);border-radius:10px;padding:12px">
             <div style="font-size:22px;font-weight:700;color:#a78bfa" id="stat-today">0</div>
-            <div style="font-size:10px;color:var(--muted)" id="stat-today-label">Hoje</div>
+            <div style="font-size:10px;color:var(--muted)" id="stat-today-label">Today</div>
           </div>
           <div style="background:var(--surface2);border-radius:10px;padding:12px">
             <div style="font-size:22px;font-weight:700;color:var(--accent)" id="stat-week">0</div>
-            <div style="font-size:10px;color:var(--muted)" id="stat-week-label">Esta semana</div>
+            <div style="font-size:10px;color:var(--muted)" id="stat-week-label">This week</div>
           </div>
           <div style="background:var(--surface2);border-radius:10px;padding:12px">
             <div style="font-size:22px;font-weight:700;color:var(--accent2)" id="stat-total">0</div>
@@ -468,14 +468,14 @@ body.focus-mode nav{border-bottom-color:#a78bfa44!important}
     <div>
       <!-- Bloco de notas da sessão -->
       <div class="panel">
-        <div class="panel-title">📝 <span id="session-title">Sessão Actual</span></div>
+        <div class="panel-title">📝 <span id="session-title">Session</span></div>
         <input type="text" id="session-goal" data-i18n-placeholder="session_goal_ph" placeholder="O que pretendes concluir nesta sessão?" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:Sora,sans-serif;font-size:13px;margin-bottom:8px">
         <textarea id="session-notes" data-i18n-placeholder="session_notes_ph" placeholder="Notas rápidas, ideias, distrações para rever depois..." rows="4" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:Sora,sans-serif;font-size:12px;resize:none"></textarea>
       </div>
 
       <!-- Lista de tarefas -->
       <div class="panel" style="margin-top:16px">
-        <div class="panel-title">✅ <span id="tasks-title">Tarefas do Dia</span></div>
+        <div class="panel-title">✅ <span id="tasks-title">Tasks</span></div>
         <div style="display:flex;gap:8px;margin-bottom:12px">
           <input type="text" id="task-input" data-i18n-placeholder="task_ph" placeholder="Nova tarefa..." onkeydown="if(event.key==='Enter')addTask()" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:Sora,sans-serif;font-size:13px">
           <select id="task-tag-select" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px;color:var(--text);font-family:Sora,sans-serif;font-size:12px">
@@ -487,12 +487,12 @@ body.focus-mode nav{border-bottom-color:#a78bfa44!important}
           <button class="btn primary" onclick="addTask()" style="background:#a78bfa;border-color:#a78bfa;padding:8px 14px">+</button>
         </div>
         <div id="task-list"></div>
-        <div style="margin-top:10px;font-size:11px;color:var(--muted)" id="task-summary">0 tarefas · 0 concluídas</div>
+        <div style="margin-top:10px;font-size:11px;color:var(--muted)" id="task-summary">0 tasks · 0 done</div>
       </div>
 
       <!-- Fusos activos durante sessão -->
       <div class="panel" style="margin-top:16px">
-        <div class="panel-title">🌍 <span id="working-title">Países em Horário Laboral Agora</span></div>
+        <div class="panel-title">🌍 <span id="working-title">Countries Working Now</span></div>
         <div id="working-hours-list" style="font-size:12px;color:var(--text)"></div>
       </div>
     </div>
@@ -1368,7 +1368,13 @@ function toggleTheme(){
 (function init(){
   const detected = detectLang();
   currentLang = detected;
-  document.getElementById('lang-selector').value = detected;
+  const sel = document.getElementById('lang-selector');
+  if(sel) sel.value = detected;
+  // Load pomodoro data FIRST — so variables are ready before setLang uses them
+  pomoLoad();
+  // Calendar renders with correct language
+  renderCal();
+  // Apply all translations including Focus Mode
   setLang(detected);
   updateMainClock();
   updateAllCities();
@@ -1739,8 +1745,7 @@ function updateWorkingHours(){
 }
 setInterval(updateWorkingHours, 60000);
 
-// Init Pomodoro
-pomoLoad();
+// Init Pomodoro — moved into init() below
 
 // ─── PWA SERVICE WORKER ──────────────────────────────────────────────────────
 if('serviceWorker' in navigator){
