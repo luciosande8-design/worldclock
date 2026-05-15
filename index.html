@@ -534,8 +534,67 @@ body.focus-mode nav{border-bottom-color:#a78bfa44!important}
   </div>
 </div>
 <footer>
-  <div style="padding:12px 20px">© 2026 WorldClock.live · <a href="#" data-i18n="about">About</a> · <a href="#" data-i18n="contact">Contact</a> · <a href="#" data-i18n="privacy">Privacy</a></div>
+  <div style="padding:12px 20px">© 2026 WorldClock.live · <a href="#" onclick="openModal('about')" data-i18n="about">About</a> · <a href="#" onclick="openModal('contact')" data-i18n="contact">Contact</a> · <a href="#" onclick="openModal('privacy')" data-i18n="privacy">Privacy</a></div>
 </footer>
+
+<!-- MODAL ABOUT -->
+<div id="modal-about" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9000;align-items:center;justify-content:center">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;max-width:520px;width:90%;position:relative;max-height:80vh;overflow-y:auto">
+    <button onclick="closeModal('about')" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">✕</button>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <svg width="40" height="40" viewBox="0 0 44 44" fill="none"><rect width="44" height="44" rx="10" fill="#0a0a0f" stroke="#00e5a0" stroke-width="1"/><circle cx="22" cy="22" r="14" stroke="#00e5a0" stroke-width="1.5"/><line x1="22" y1="22" x2="30" y2="12" stroke="#00e5a0" stroke-width="2" stroke-linecap="round"/><line x1="22" y1="22" x2="16" y2="30" stroke="#00b8d4" stroke-width="1.5" stroke-linecap="round"/><circle cx="22" cy="22" r="2.5" fill="#00e5a0"/></svg>
+      <div><div style="font-family:Space Mono,monospace;font-size:18px;color:var(--accent)">WorldClock<span style="color:var(--text)">.live</span></div><div style="font-size:11px;color:var(--muted)">Global Time & Productivity Hub</div></div>
+    </div>
+    <p style="font-size:13px;color:var(--text);line-height:1.7;margin-bottom:12px">WorldClock.live is a free real-time world clock covering 120+ cities across 80+ countries and 38 time zones. Built and maintained independently from Beira, Mozambique.</p>
+    <p style="font-size:13px;color:var(--text);line-height:1.7;margin-bottom:12px">Our mission is to make time accessible to everyone — from professionals coordinating across time zones to students managing their focus with the built-in Pomodoro system.</p>
+    <p style="font-size:13px;color:var(--text);line-height:1.7;margin-bottom:20px">The platform supports 10 languages with automatic detection, works as an installable app (PWA), and is designed with a strong focus on African cities and communities.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center">
+      <div style="background:var(--surface2);border-radius:10px;padding:12px"><div style="font-size:22px;font-weight:700;color:var(--accent)">120+</div><div style="font-size:11px;color:var(--muted)">Cities</div></div>
+      <div style="background:var(--surface2);border-radius:10px;padding:12px"><div style="font-size:22px;font-weight:700;color:var(--accent2)">10</div><div style="font-size:11px;color:var(--muted)">Languages</div></div>
+      <div style="background:var(--surface2);border-radius:10px;padding:12px"><div style="font-size:22px;font-weight:700;color:#a78bfa">38</div><div style="font-size:11px;color:var(--muted)">Time Zones</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONTACT -->
+<div id="modal-contact" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9000;align-items:center;justify-content:center">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;max-width:480px;width:90%;position:relative">
+    <button onclick="closeModal('contact')" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">✕</button>
+    <h2 style="font-size:18px;color:var(--text);margin-bottom:8px">Contact Us</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:20px">Have a question, suggestion or want to advertise on WorldClock.live? Get in touch.</p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <input id="contact-name" type="text" placeholder="Your name" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:Sora,sans-serif;font-size:13px;width:100%">
+      <input id="contact-email" type="email" placeholder="Your email" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:Sora,sans-serif;font-size:13px;width:100%">
+      <select id="contact-subject" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:Sora,sans-serif;font-size:13px">
+        <option>General question</option>
+        <option>Advertising / Sponsorship</option>
+        <option>Bug report</option>
+        <option>Feature suggestion</option>
+        <option>Partnership</option>
+      </select>
+      <textarea id="contact-msg" rows="4" placeholder="Your message..." style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:Sora,sans-serif;font-size:13px;resize:none"></textarea>
+      <button onclick="submitContact()" style="background:var(--accent);color:#000;border:none;border-radius:8px;padding:12px;font-family:Sora,sans-serif;font-size:14px;font-weight:600;cursor:pointer">Send Message</button>
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-top:12px;text-align:center">Or email us directly: <span style="color:var(--accent2)">contact@worldclock.live</span></p>
+  </div>
+</div>
+
+<!-- MODAL PRIVACY -->
+<div id="modal-privacy" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9000;align-items:center;justify-content:center">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;max-width:520px;width:90%;position:relative;max-height:80vh;overflow-y:auto">
+    <button onclick="closeModal('privacy')" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">✕</button>
+    <h2 style="font-size:18px;color:var(--text);margin-bottom:16px">Privacy Policy</h2>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:16px">Last updated: May 2026</p>
+    <div style="font-size:13px;color:var(--text);line-height:1.7">
+      <p style="margin-bottom:12px"><strong>Data Collection:</strong> WorldClock.live does not collect personal data. We do not require registration or login.</p>
+      <p style="margin-bottom:12px"><strong>Local Storage:</strong> We use your browser's localStorage to save Focus Mode preferences and task lists. This data stays on your device and is never transmitted.</p>
+      <p style="margin-bottom:12px"><strong>Advertising:</strong> This site uses Google AdSense to display ads. Google may use cookies to serve personalised ads. You can opt out via <a href="https://adssettings.google.com" target="_blank" style="color:var(--accent2)">Google Ad Settings</a>.</p>
+      <p style="margin-bottom:12px"><strong>Cookies:</strong> Cookies may be set by Google AdSense for advertising purposes. We do not set any first-party cookies.</p>
+      <p style="margin-bottom:12px"><strong>Third-Party Services:</strong> We use Google Fonts for typography. No other third-party services collect data through this site.</p>
+      <p><strong>Contact:</strong> For privacy concerns, contact us at contact@worldclock.live</p>
+    </div>
+  </div>
+</div>
 
 <script>
 // ─── TRANSLATIONS ────────────────────────────────────────────────────────────
@@ -1720,6 +1779,35 @@ window.addEventListener('beforeinstallprompt', e => {
   const banner = document.getElementById('install-banner');
   if(banner) banner.style.display = 'flex';
 });
+
+// ─── MODALS ───────────────────────────────────────────────────────────────────
+function openModal(id){
+  const m = document.getElementById('modal-'+id);
+  if(m){ m.style.display='flex'; document.body.style.overflow='hidden'; }
+}
+function closeModal(id){
+  const m = document.getElementById('modal-'+id);
+  if(m){ m.style.display='none'; document.body.style.overflow=''; }
+}
+// Close modal on background click
+document.addEventListener('click', e => {
+  ['about','contact','privacy'].forEach(id => {
+    const m = document.getElementById('modal-'+id);
+    if(m && e.target === m) closeModal(id);
+  });
+});
+function submitContact(){
+  const name = document.getElementById('contact-name').value.trim();
+  const email = document.getElementById('contact-email').value.trim();
+  const msg = document.getElementById('contact-msg').value.trim();
+  if(!name || !email || !msg){ showTaskToast('Please fill all fields.'); return; }
+  // Open mailto as fallback (no server needed)
+  const subject = document.getElementById('contact-subject').value;
+  const body = `Name: ${name}\nEmail: ${email}\n\n${msg}`;
+  window.location.href = `mailto:contact@worldclock.live?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  showTaskToast('Opening your email client... 📧');
+  setTimeout(()=> closeModal('contact'), 1500);
+}
 
 // ─── INIT — must be last, after all functions and constants are defined ───────
 (function init(){
