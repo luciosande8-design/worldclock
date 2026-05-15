@@ -879,87 +879,48 @@ function setLang(code){
   document.getElementById('user-location').textContent = T.detecting;
   // Focus Mode translations — aplicar a todos os elementos visíveis
   if(T.focus_streak){
-    // Streak label
-    const sl = document.getElementById('streak-label'); if(sl) sl.textContent = T.focus_streak;
-    // Sessions today
-    const st = document.getElementById('sessions-today'); if(st) st.textContent = pomoSessionsToday+' '+T.focus_sessions_today;
-    // Cycle label
-    const cl = document.getElementById('cycle-label'); if(cl) cl.textContent = T.focus_cycle;
-    // Daily goal label
-    const gl = document.getElementById('daily-goal-label'); if(gl) gl.textContent = T.focus_goal;
-    // Stats title
-    const stl = document.getElementById('stats-title'); if(stl) stl.textContent = T.focus_stats;
-    // Stat labels
-    const tl = document.getElementById('stat-today-label'); if(tl) tl.textContent = T.focus_today;
-    const wl = document.getElementById('stat-week-label'); if(wl) wl.textContent = T.focus_week;
-    const ol = document.getElementById('stat-total-label'); if(ol) ol.textContent = T.focus_total;
-    // Session block title
-    const set2 = document.getElementById('session-title'); if(set2) set2.textContent = T.focus_session_title;
-    // Tasks title
-    const tst = document.getElementById('tasks-title'); if(tst) tst.textContent = T.focus_tasks_title;
-    // Working hours title
-    const wht = document.getElementById('working-title'); if(wht) wht.textContent = T.focus_working;
-    // Placeholders
-    const sg = document.getElementById('session-goal'); if(sg) sg.placeholder = T.session_goal_ph;
-    const sn = document.getElementById('session-notes'); if(sn) sn.placeholder = T.session_notes_ph;
-    const ti = document.getElementById('task-input'); if(ti) ti.placeholder = T.task_ph;
-    // Mode buttons
-    const mw = document.querySelector('.pm-work'); if(mw) mw.textContent = T.focus_mode_work;
-    const ms = document.querySelector('.pm-study'); if(ms) ms.textContent = T.focus_mode_study;
-    const mm = document.querySelector('.pm-meeting'); if(mm) mm.textContent = T.focus_mode_meeting;
-    const md = document.querySelector('.pm-deep'); if(md) md.textContent = T.focus_mode_deep;
-    // Pomo control buttons
-    const pb = document.getElementById('pomo-btn');
-    if(pb){
-      if(pomoState==='idle') pb.innerHTML = T.focus_start+' <span id="pomo-btn-label"></span>';
-      else if(pomoState==='running') pb.innerHTML = T.focus_pause;
-      else pb.innerHTML = T.focus_resume;
-    }
-    const rb = document.getElementById('pomo-reset-btn'); if(rb) rb.textContent = T.focus_reset;
-    const skb = document.getElementById('pomo-skip-btn'); if(skb) skb.textContent = T.focus_skip;
-    const zb = document.getElementById('zen-btn'); if(zb) zb.textContent = T.focus_zen;
-    // Task tag options
+    // Task tag select options
     const tts = document.getElementById('task-tag-select');
     if(tts){
-      const opts = tts.querySelectorAll('option');
-      const tagLabels = [T.focus_mode_work, T.focus_mode_study, null, null];
-      const tagLabelsFull = [
-        '💼 '+T.focus_mode_work,
-        '📚 '+T.focus_mode_study,
-        '👤 '+(T.focus_mode_work==='Work'?'Personal':'Pessoal'),
-        '🌍 '+T.focus_mode_meeting
-      ];
-      // Map by value
-      const tagMap = {
-        work:'💼 '+T.focus_mode_work,
-        study:'📚 '+T.focus_mode_study,
-        personal:'👤 '+(currentLang==='en'?'Personal':currentLang==='fr'?'Personnel':currentLang==='es'?'Personal':currentLang==='de'?'Persönlich':currentLang==='it'?'Personale':currentLang==='ru'?'Личное':currentLang==='ja'?'個人':currentLang==='zh'?'个人':currentLang==='ar'?'شخصي':'Pessoal'),
-        meeting:'🌍 '+T.focus_mode_meeting
-      };
-      opts.forEach(o => { if(tagMap[o.value]) o.textContent = tagMap[o.value]; });
+      const personalWord = currentLang==='pt'?'Pessoal':currentLang==='fr'?'Personnel':currentLang==='es'?'Personal':currentLang==='de'?'Persönlich':currentLang==='it'?'Personale':currentLang==='ar'?'شخصي':currentLang==='zh'?'个人':currentLang==='ja'?'個人':currentLang==='ru'?'Личное':'Personal';
+      const tagMap = {work:'💼 '+(T.focus_mode_work||'Work'), study:'📚 '+(T.focus_mode_study||'Study'), personal:'👤 '+personalWord, meeting:'🌍 '+(T.focus_mode_meeting||'Meeting')};
+      tts.querySelectorAll('option').forEach(o => { if(tagMap[o.value]) o.textContent = tagMap[o.value]; });
     }
-    // Daily progress label
-    const dp = document.getElementById('daily-progress-label');
-    if(dp) dp.textContent = pomoSessionsToday+' / 8 '+(T.sessions_label||'sessions');
-    // Focus toast message
-    const ft = document.getElementById('focus-toast');
-    if(ft){
-      const ftitle = ft.querySelector('div > div:first-child');
-      const fdesc = ft.querySelector('div > div:last-child');
-      if(ftitle) ftitle.textContent = (currentLang==='en'?'New — Focus Mode':currentLang==='fr'?'Nouveau — Mode Focus':currentLang==='es'?'Nuevo — Modo Focus':currentLang==='de'?'Neu — Fokus-Modus':currentLang==='it'?'Novità — Modalità Focus':currentLang==='ar'?'جديد — وضع التركيز':currentLang==='zh'?'新功能 — 专注模式':currentLang==='ja'?'新機能 — フォーカスモード':currentLang==='ru'?'Новое — Режим Фокуса':'Novidade — Focus Mode');
-    }
+    // Mode buttons
+    document.querySelectorAll('.pm-work').forEach(el => el.textContent = T.focus_mode_work || 'Work');
+    document.querySelectorAll('.pm-study').forEach(el => el.textContent = T.focus_mode_study || 'Study');
+    document.querySelectorAll('.pm-meeting').forEach(el => el.textContent = T.focus_mode_meeting || 'Meeting');
+    document.querySelectorAll('.pm-deep').forEach(el => el.textContent = T.focus_mode_deep || 'Deep Work');
+    // Pomo control buttons
+    const pb = document.getElementById('pomo-btn');
+    if(pb){ const lbl = document.getElementById('pomo-btn-label'); if(lbl){ if(pomoState==='running') lbl.textContent=(T.focus_pause||'⏸ Pause').replace('⏸ ',''); else if(pomoState==='paused') lbl.textContent=(T.focus_resume||'▶ Resume').replace('▶ ',''); else lbl.textContent=(T.focus_start||'▶ Start').replace('▶ ',''); } }
+    const rb=document.getElementById('pomo-reset-btn'); if(rb) rb.textContent='↺ '+(T.focus_reset||'Reset').replace('↺ ','');
+    const skb=document.getElementById('pomo-skip-btn'); if(skb) skb.textContent='⏭ '+(T.focus_skip||'Skip').replace('⏭ ','');
+    const zb=document.getElementById('zen-btn'); if(zb) zb.textContent=T.focus_zen||'🧘 Zen';
+    // All labels
+    const esl=document.getElementById('streak-label'); if(esl) esl.textContent=T.focus_streak||'STREAK';
+    const est=document.getElementById('sessions-today'); if(est) est.textContent=pomoSessionsToday+' '+(T.focus_sessions_today||'sessions today');
+    const ecl=document.getElementById('cycle-label'); if(ecl) ecl.textContent=T.focus_cycle||'Cycle';
+    const egl=document.getElementById('daily-goal-label'); if(egl) egl.textContent=T.focus_goal||'Daily goal';
+    const edp=document.getElementById('daily-progress-label'); if(edp) edp.textContent=pomoSessionsToday+' / 8 '+(T.sessions_label||'sessions');
+    const estl=document.getElementById('stats-title'); if(estl) estl.textContent=T.focus_stats||'Statistics';
+    const etl=document.getElementById('stat-today-label'); if(etl) etl.textContent=T.focus_today||'Today';
+    const ewl=document.getElementById('stat-week-label'); if(ewl) ewl.textContent=T.focus_week||'This week';
+    const eol=document.getElementById('stat-total-label'); if(eol) eol.textContent=T.focus_total||'Total';
+    const eset=document.getElementById('session-title'); if(eset) eset.textContent=T.focus_session_title||'Current Session';
+    const etst=document.getElementById('tasks-title'); if(etst) etst.textContent=T.focus_tasks_title||"Today's Tasks";
+    const ewht=document.getElementById('working-title'); if(ewht) ewht.textContent=T.focus_working||'Countries Working Now';
+    const esg=document.getElementById('session-goal'); if(esg) esg.placeholder=T.session_goal_ph||'What do you want to achieve this session?';
+    const esn=document.getElementById('session-notes'); if(esn) esn.placeholder=T.session_notes_ph||'Quick notes...';
+    const eti=document.getElementById('task-input'); if(eti) eti.placeholder=T.task_ph||'New task...';
     // Pomo state label
-    const psl = document.getElementById('pomo-state-label');
-    if(psl && pomoState==='idle'){
-      psl.textContent = currentLang==='en'?'FOCUS':currentLang==='fr'?'FOCUS':currentLang==='es'?'FOCO':currentLang==='de'?'FOKUS':currentLang==='it'?'FOCUS':currentLang==='ar'?'تركيز':currentLang==='zh'?'专注':currentLang==='ja'?'集中':currentLang==='ru'?'ФОКУС':'FOCO';
-    }
-    // City line
+    const epsl=document.getElementById('pomo-state-label');
+    if(epsl && pomoState==='idle'){ const fw=currentLang==='pt'?'FOCO':currentLang==='es'?'FOCO':currentLang==='de'?'FOKUS':currentLang==='ar'?'تركيز':currentLang==='zh'?'专注':currentLang==='ja'?'集中':currentLang==='ru'?'ФОКУС':'FOCUS'; epsl.textContent=fw; }
+    // City line, quote, dynamic content
     updateFocusCityLine();
-    // Update quote
-    const langQuotes = QUOTES[currentLang] || QUOTES['en'];
-    const qEl = document.getElementById('daily-quote');
-    if(qEl) qEl.textContent = langQuotes[Math.floor(Math.random()*langQuotes.length)];
-    // Update dynamic content that depends on language
+    const langQuotes=QUOTES[currentLang]||QUOTES['en'];
+    const qEl=document.getElementById('daily-quote');
+    if(qEl) qEl.textContent=langQuotes[Math.floor(Math.random()*langQuotes.length)];
     pomoUpdateStats();
     renderTasks();
     updateWorkingHours();
