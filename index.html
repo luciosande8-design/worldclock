@@ -918,12 +918,14 @@ function setLang(code){
     if(epsl && pomoState==='idle'){ const fw=currentLang==='pt'?'FOCO':currentLang==='es'?'FOCO':currentLang==='de'?'FOKUS':currentLang==='ar'?'تركيز':currentLang==='zh'?'专注':currentLang==='ja'?'集中':currentLang==='ru'?'ФОКУС':'FOCUS'; epsl.textContent=fw; }
     // City line, quote, dynamic content
     updateFocusCityLine();
-    const langQuotes=QUOTES[currentLang]||QUOTES['en'];
-    const qEl=document.getElementById('daily-quote');
-    if(qEl) qEl.textContent=langQuotes[Math.floor(Math.random()*langQuotes.length)];
-    pomoUpdateStats();
-    renderTasks();
-    updateWorkingHours();
+    if(typeof QUOTES !== 'undefined'){
+      const langQuotes=QUOTES[currentLang]||QUOTES['en'];
+      const qEl=document.getElementById('daily-quote');
+      if(qEl) qEl.textContent=langQuotes[Math.floor(Math.random()*langQuotes.length)];
+    }
+    if(typeof pomoUpdateStats==='function') pomoUpdateStats();
+    if(typeof renderTasks==='function') renderTasks();
+    if(typeof updateWorkingHours==='function') updateWorkingHours();
   }
   // calendar
   renderCal();
@@ -1329,27 +1331,6 @@ function toggleTheme(){
   else{r.setProperty('--bg','#0a0a0f');r.setProperty('--surface','#13131a');r.setProperty('--surface2','#1c1c28');r.setProperty('--text','#f0f0f8');r.setProperty('--muted','#8888aa');r.setProperty('--border','#2a2a3a');btn.textContent='☀';}
 }
 
-// ─── INIT ────────────────────────────────────────────────────────────────────
-(function init(){
-  const detected = detectLang();
-  currentLang = detected;
-  const sel = document.getElementById('lang-selector');
-  if(sel) sel.value = detected;
-  // Load pomodoro data FIRST — so variables are ready before setLang uses them
-  pomoLoad();
-  // Calendar renders with correct language
-  renderCal();
-  // Apply all translations including Focus Mode
-  setLang(detected);
-  // Now apply focus mode dynamic content that needs lang + data
-  pomoUpdateStats();
-  renderTasks();
-  updateWorkingHours();
-  // Main clock and cities
-  updateMainClock();
-  updateAllCities();
-})();
-
 // ─── POMODORO SYSTEM ─────────────────────────────────────────────────────────
 const QUOTES = {
   pt: [
@@ -1739,6 +1720,22 @@ window.addEventListener('beforeinstallprompt', e => {
   const banner = document.getElementById('install-banner');
   if(banner) banner.style.display = 'flex';
 });
+
+// ─── INIT — must be last, after all functions and constants are defined ───────
+(function init(){
+  const detected = detectLang();
+  currentLang = detected;
+  const sel = document.getElementById('lang-selector');
+  if(sel) sel.value = detected;
+  pomoLoad();          // load saved data
+  renderCal();         // calendar with correct lang
+  setLang(detected);   // translate entire interface
+  pomoUpdateStats();   // update streak/session numbers
+  renderTasks();       // render task list
+  updateWorkingHours(); // show working countries
+  updateMainClock();   // start main clock
+  updateAllCities();   // update city clocks
+})();
 </script>
 </body>
 </html>
